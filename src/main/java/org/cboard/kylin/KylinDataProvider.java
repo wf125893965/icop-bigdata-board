@@ -1,8 +1,22 @@
 package org.cboard.kylin;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringJoiner;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
 import org.cboard.cache.CacheManager;
 import org.cboard.cache.HeapCacheManager;
@@ -12,7 +26,11 @@ import org.cboard.dataprovider.aggregator.Aggregatable;
 import org.cboard.dataprovider.annotation.DatasourceParameter;
 import org.cboard.dataprovider.annotation.ProviderName;
 import org.cboard.dataprovider.annotation.QueryParameter;
-import org.cboard.dataprovider.config.*;
+import org.cboard.dataprovider.config.AggConfig;
+import org.cboard.dataprovider.config.CompositeConfig;
+import org.cboard.dataprovider.config.ConfigComponent;
+import org.cboard.dataprovider.config.DimensionConfig;
+import org.cboard.dataprovider.config.ValueConfig;
 import org.cboard.dataprovider.result.AggregateResult;
 import org.cboard.dataprovider.result.ColumnIndex;
 import org.slf4j.Logger;
@@ -21,13 +39,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.web.client.RestTemplate;
 
-import java.sql.*;
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 
 /**
@@ -129,7 +143,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
         String exec = null;
         List<String> filtered = new ArrayList<>();
         String tableName = kylinModel.getTable(columnName);
-        String columnAliasName = kylinModel.getColumnAndAlias(columnName);
+//        String columnAliasName = kylinModel.getColumnAndAlias(columnName);
         String whereStr = "";
         if (config != null) {
             Stream<DimensionConfig> c = config.getColumns().stream();
@@ -149,7 +163,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             whereStr = assembleSqlFilter(filterHelpers, "WHERE", kylinModel);
         }
         fsql = "SELECT %s FROM %s %s %s GROUP BY %s ORDER BY %s";
-        exec = String.format(fsql, columnAliasName, tableName, kylinModel.getTableAlias(tableName), whereStr, columnAliasName, columnAliasName);
+        exec = String.format(fsql, columnName, tableName, StringUtils.substringBefore(columnName, "."), whereStr, columnName, columnName);
         LOG.info(exec);
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
@@ -175,46 +189,46 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             switch (config.getFilterType()) {
                 case "=":
                 case "≠":
-                    return kylinModel.getColumnAndAlias(config.getColumnName()) + ("=".equals(config.getFilterType()) ? " IS NULL" : " IS NOT NULL");
+                    return config.getColumnName() + ("=".equals(config.getFilterType()) ? " IS NULL" : " IS NOT NULL");
             }
         }
 
         switch (config.getFilterType()) {
             case "=":
             case "eq":
-                return kylinModel.getColumnAndAlias(config.getColumnName()) + " IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
+                return config.getColumnName() + " IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
             case "≠":
             case "ne":
-                return kylinModel.getColumnAndAlias(config.getColumnName()) + " NOT IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
+                return config.getColumnName() + " NOT IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
             case ">":
-                return kylinModel.getColumnAndAlias(config.getColumnName()) + " > " + dimensionConfigHelper.getValueStr(config, 0);
+                return config.getColumnName() + " > " + dimensionConfigHelper.getValueStr(config, 0);
             case "<":
-                return kylinModel.getColumnAndAlias(config.getColumnName()) + " < " + dimensionConfigHelper.getValueStr(config, 0);
+                return config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 0);
             case "≥":
-                return kylinModel.getColumnAndAlias(config.getColumnName()) + " >= " + dimensionConfigHelper.getValueStr(config, 0);
+                return config.getColumnName() + " >= " + dimensionConfigHelper.getValueStr(config, 0);
             case "≤":
-                return kylinModel.getColumnAndAlias(config.getColumnName()) + " <= " + dimensionConfigHelper.getValueStr(config, 0);
+                return config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 0);
             case "(a,b]":
                 if (config.getValues().size() >= 2) {
-                    return "(" + kylinModel.getColumnAndAlias(config.getColumnName()) + " > '" + dimensionConfigHelper.getValueStr(config, 0) + "' AND " + kylinModel.getColumnAndAlias(config.getColumnName()) + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + config.getColumnName() + " > '" + dimensionConfigHelper.getValueStr(config, 0) + "' AND " + config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
             case "[a,b)":
                 if (config.getValues().size() >= 2) {
-                    return "(" + kylinModel.getColumnAndAlias(config.getColumnName()) + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + kylinModel.getColumnAndAlias(config.getColumnName()) + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + config.getColumnName() + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
             case "(a,b)":
                 if (config.getValues().size() >= 2) {
-                    return "(" + kylinModel.getColumnAndAlias(config.getColumnName()) + " > " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + kylinModel.getColumnAndAlias(config.getColumnName()) + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + config.getColumnName() + " > " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
             case "[a,b]":
                 if (config.getValues().size() >= 2) {
-                    return "(" + kylinModel.getColumnAndAlias(config.getColumnName()) + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + kylinModel.getColumnAndAlias(config.getColumnName()) + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + config.getColumnName() + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
@@ -257,7 +271,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
     private String assembleDimColumns(Stream<DimensionConfig> columnsStream, KylinModel model) {
         StringJoiner columns = new StringJoiner(", ", "", " ");
         columns.setEmptyValue("");
-        columnsStream.map(g -> model.getColumnAndAlias(g.getColumnName())).distinct().filter(e -> e != null).forEach(columns::add);
+        columnsStream.map(g -> g.getColumnName()).distinct().filter(e -> e != null).forEach(columns::add);
         return columns.toString();
     }
 
@@ -364,17 +378,17 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
     private BiFunction<ValueConfig, KylinModel, String> toSelect = (config, model) -> {
         switch (config.getAggType()) {
             case "sum":
-                return "SUM(" + model.getColumnAndAlias(config.getColumn()) + ") AS sum_" + config.getColumn();
+                return "SUM(" + config.getColumn() + ") AS sum_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "avg":
-                return "AVG(" + model.getColumnAndAlias(config.getColumn()) + ") AS avg_" + config.getColumn();
+                return "AVG(" + config.getColumn() + ") AS avg_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "max":
-                return "MAX(" + model.getColumnAndAlias(config.getColumn()) + ") AS max_" + config.getColumn();
+                return "MAX(" + config.getColumn() + ") AS max_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "min":
-                return "MIN(" + model.getColumnAndAlias(config.getColumn()) + ") AS min_" + config.getColumn();
+                return "MIN(" + config.getColumn() + ") AS min_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "distinct":
-                return "COUNT(DISTINCT " + model.getColumnAndAlias(config.getColumn()) + ") AS count_d_" + config.getColumn();
+                return "COUNT(DISTINCT " + config.getColumn() + ") AS count_d_" + StringUtils.substringAfter(config.getColumn(), ".");
             default:
-                return "COUNT(" + model.getColumnAndAlias(config.getColumn()) + ") AS count_" + config.getColumn();
+                return "COUNT(" + config.getColumn() + ") AS count_" + StringUtils.substringAfter(config.getColumn(), ".");
         }
     };
 

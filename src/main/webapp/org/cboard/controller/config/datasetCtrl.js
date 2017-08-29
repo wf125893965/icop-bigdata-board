@@ -472,7 +472,6 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
     $scope.loadData = function () {
         cleanPreview();
         $scope.loading = true;
-
         dataService.getColumns({
             datasource: $scope.datasource.id,
             query: $scope.curWidget.query,
