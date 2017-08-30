@@ -64,7 +64,7 @@ function jstree_GetSelectedNodes(domID) {
 function jstree_CvtVPath2TreeData (listIn) {
     var newParentId = 1;
     var listOut = [];
-    listOut.push({"id": "root", "parent": "#", "text": "Root", state: {opened: true}});
+    listOut.push({"id": "root", "parent": "#", "text": "根目录", state: {opened: true}});
     for (var i = 0; i < listIn.length; i++) {
         var arr = listIn[i].categoryName.split('/');
         arr.push(listIn[i].name);
