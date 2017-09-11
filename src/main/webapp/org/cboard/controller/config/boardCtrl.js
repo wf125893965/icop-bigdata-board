@@ -265,8 +265,16 @@ cBoard.controller('boardCtrl', function ($rootScope, $scope, $http, ModalUtils, 
                     if (!Id) {
                         Id = $scope.curBoard.id;
                     }
-                    var url = $state.href('mine.view', {id: Id});
-                    newTab.location.href = url;
+                    
+                    $http.post("dashboard/getPreviewUrl.do", {
+                    	id: Id
+                    }).success(function (data) {
+                        newTab.location.href = data.msg;
+                    }).error(function (data, status, headers, config) {
+                    	var url = $state.href('mine.view', {id: Id});
+                    	newTab.location.href = url;
+                    });
+//                    newTab.location.href = url;
                 });
         });
     };
