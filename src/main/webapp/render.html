@@ -108,6 +108,7 @@
 <div ng-if="persistFinish" class="persistFinish">
 </div>
 <div id="inner-container" class="content" style="margin-top: 15px;">
+    <input ng-model="relations" ng-hide="true" id="relations"/> <!--json [{},{}]-->
     <div class="row" ng-repeat="row in board.layout.rows track by $index" ng-style="{height:row.height+'px'}">
         <ng-switch on="row.type">
             <div ng-switch-default>
@@ -217,6 +218,19 @@
             <div class="box-header">
                 <i class="fa fa-bar-chart-o"></i>
                 <h3 class="box-title">{{widget.name}}</h3>
+                <div class="box-tools pull-right" ng-show="x" ng-init="x=false">
+                    <button name="reload_{{widget.widget.id}}" type="button" class="btn btn-box-tool" ng-click="reload(widget)"><i
+                            class="fa fa-refresh"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" ng-if="widgetCfg" ng-click="config(widget)"><i
+                            class="fa fa-wrench"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" ng-click="modalChart(widget)"><i
+                            class="fa fa-square-o"></i>
+                    </button>
+                </div>
             </div>
             <div class="box-body" ng-style="{height:myheight+'px'}">
             </div>
@@ -233,6 +247,19 @@
             <div class="box-header">
                 <i class="fa fa-bar-chart-o"></i>
                 <h3 class="box-title">{{widget.name}}</h3>
+                <div class="box-tools pull-right" ng-show="x" ng-init="x=false">
+                    <button name="reload_{{widget.widget.id}}" type="button" class="btn btn-box-tool" ng-click="reload(widget)"><i
+                            class="fa fa-refresh"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" ng-if="widgetCfg" ng-click="config(widget)"><i
+                            class="fa fa-wrench"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" ng-click="modalChart(widget)"><i
+                            class="fa fa-square-o"></i>
+                    </button>
+                </div>
             </div>
             <div class="box-body" ng-style="{height:myheight+'px'}">
             </div>

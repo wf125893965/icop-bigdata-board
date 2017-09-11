@@ -103,7 +103,8 @@ CBoardEChartRender.prototype.addClick = function (chartConfig, relations, $state
         var sourceField = relations.sourceField;
         var links = relations.relations;
         //[{"targetId":relation.targetId, params:[{"targetField":targetField,"value":param.name},{}]}]
-        var relations_old = JSON.parse($("#relations").val());
+//        var relations_old = JSON.parse($("#relations").val());
+        var relations_old = JSON.parse("[]");
         var relations_new = [];
         _.each(relations_old, function (relation_old) { //删除已存在的
             var exists = false;
