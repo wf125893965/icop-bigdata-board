@@ -51,6 +51,11 @@ public class LocalSecurityFilter implements Filter {
                 }
             } catch (Exception e) {
                 //e.printStackTrace();
+            	User user = new User("shareUser", "", new ArrayList<>());
+                user.setUserId("1");
+                SecurityContext context = SecurityContextHolder.getContext();
+                context.setAuthentication(new ShareAuthenticationToken(user));
+                ((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", context);
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);
