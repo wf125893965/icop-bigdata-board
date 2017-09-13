@@ -76,6 +76,14 @@
     text-align: center;
     pointer-events: none;
 }
+
+.login-links {
+	margin-top: 8%; 
+	color: #2087F6; 
+	font-size: 14px; 
+	font-family: PingFangSC-Regular;
+}
+
 .version {
 	color: #96999C;
 	font-family: PingFangSC-Light;
@@ -90,5 +98,9 @@
 }
 input:-webkit-autofill {
 	-webkit-box-shadow: 0 0 0px 1000px white inset !important;
+	border: 1px solid #E8ECF5!important;
+}
+
+input:focus {
 	border: 1px solid #E8ECF5!important;
 }
