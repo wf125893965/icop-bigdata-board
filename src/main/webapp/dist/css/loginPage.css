@@ -5,7 +5,7 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	margin: 10% auto;
+	margin: 8% auto;
 }
 
 .login-content {
@@ -14,7 +14,7 @@
 
 .login-img {
 	margin-left: -10%;
-	width: 50%;
+	width: 60%;
 }
 
 .content-center {
@@ -24,7 +24,7 @@
 }
 
 .login-form {
-	 margin-left: 7%; 
+	 margin-left: 5%; 
 	 width: 23%;
 }
 
@@ -64,7 +64,18 @@
     text-align: center;
     pointer-events: none;
 }
-
+.version {
+	color: #96999C;
+	font-family: PingFangSC-Light;
+	font-size: 14px;
+	
+ 	left: 0;  
+    position: fixed;  
+    bottom: 0;
+    width: 100%;  
+    z-index: 100;
+    margin-bottom: 3%;
+}
 input:-webkit-autofill {
 	-webkit-box-shadow: 0 0 0px 1000px white inset !important;
 	border: 1px solid #E8ECF5!important;
