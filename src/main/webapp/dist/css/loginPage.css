@@ -2,6 +2,7 @@
 	background: #FFFFFF;
     overflow: hidden;
 	width: 100%;
+	height: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -10,11 +11,11 @@
 
 .login-content {
 	width: 100%;
+	height: 60%;
 }
 
 .login-img {
 	margin-left: -10%;
-	width: 60%;
 }
 
 .content-center {
@@ -26,40 +27,51 @@
 .login-form {
 	 margin-left: 5%; 
 	 width: 23%;
+	 height: 80%;
+}
+
+.logo {
+	margin-top: 15%;
+	margin-bottom: 10%;
 }
 
 .login-input {
     border-radius: 4px;
     border-color: #E8ECF5;
-    height: 52px;
+    height: 100%;
     padding-left: 60px;
+}
+
+.form-group.has-feedback {
+	 height: 15%;
 }
 
 .btn.btn-bule {
 	color: #FFFFFF;
-	font-size: 18px;
+	font-size: 16px;
     background-color: #3995F8;
     border-color: #3995F8;
     border-radius: 4px;
-    height: 51px;
+    height: 15%;
     box-shadow: 0px 10px 50px RGBA(57,149,248,0.4);
 }
 
 .input-left-icon {
 	position: absolute;
-	width: 50px;
-    height: 50px;
+	top: 0px;
+	width: 13%;
+    height: 100%;
    	border-right:1px solid #E8ECF5;
 }
 
 .form-control-feedback-login {
    	position: absolute;
-    top: 16px;
-    left: 16px;
+    top: 30%;
+    left: 30%;
     z-index: 2;
     display: block;
-    width: 20px;
-    height: 20px;
+    width: 40%;
+    height: 40%;
     line-height: 52px;
     text-align: center;
     pointer-events: none;
@@ -72,7 +84,7 @@
  	left: 0;  
     position: fixed;  
     bottom: 0;
-    width: 100%;  
+    width: 100%;
     z-index: 100;
     margin-bottom: 3%;
 }
