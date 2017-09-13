@@ -1,19 +1,26 @@
 package org.cboard.security.service;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import org.apache.commons.lang.StringUtils;
-import org.cboard.dto.User;
-import org.cboard.security.ShareAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+
+import org.cboard.dto.User;
+import org.cboard.security.ShareAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Created by yfyuan on 2017/2/22.
@@ -38,25 +45,20 @@ public class LocalSecurityFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if ("/render.html".equals(((HttpServletRequest) servletRequest).getServletPath())) {
-            String sid = ((HttpServletRequest) servletRequest).getParameter("sid");
-            try {
-                String uid = sidCache.get(sid);
-                if (StringUtils.isNotEmpty(uid)) {
-                    User user = new User("shareUser", "", new ArrayList<>());
-                    user.setUserId(sidCache.get(sid));
-                    SecurityContext context = SecurityContextHolder.getContext();
-                    context.setAuthentication(new ShareAuthenticationToken(user));
-                    ((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", context);
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-            	User user = new User("shareUser", "", new ArrayList<>());
-                user.setUserId("1");
-                SecurityContext context = SecurityContextHolder.getContext();
-                context.setAuthentication(new ShareAuthenticationToken(user));
-                ((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", context);
-            }
+    	if ("/render.html".equals(((HttpServletRequest) servletRequest).getServletPath())) {
+            User user = new User("shareUser", "", new ArrayList<>());
+            user.setUserId("1");
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(new ShareAuthenticationToken(user));
+            ((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", context);
+        }else{
+        	SecurityContext context = (SecurityContext) ((HttpServletRequest) servletRequest).getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+        	if(context!=null){
+        		Authentication authentication = context.getAuthentication();
+        		if(authentication!=null&&("shareUser").equals(authentication.getName())){
+        			((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT",null);
+        		}
+        	}
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
