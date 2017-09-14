@@ -94,6 +94,7 @@ class KylinModel implements Serializable {
 					alias = "_t" + tableAlias.keySet().size() + 1;
 					tableAlias.put(t, alias);
 				}*/
+				
 				columnTable.put(table+"."+s.toString(), t);
 			}
 			
@@ -113,11 +114,11 @@ class KylinModel implements Serializable {
 		});*/
 		model.getJSONArray("metrics").stream().map(e -> e.toString()).forEach(s -> {
 			String t = model.getString("fact_table");
-			String alias = tableAlias.get(t);
+		/*	String alias = tableAlias.get(t);
 			if (alias == null) {
 				alias = "_t" + tableAlias.keySet().size() + 1;
 				tableAlias.put(t, alias);
-			}
+			}*/
 			columnTable.put(s, t);
 		});
 	}
@@ -156,7 +157,7 @@ class KylinModel implements Serializable {
 					.toArray(String[]::new);
 			List<String> on = new ArrayList<>();
 			for (int i = 0; i < pk.length; i++) {
-				on.add(String.format("%s = %s", pk[i],fk[i]));
+				on.add(String.format("%s = %s", surroundWithQutaAll(pk[i]),surroundWithQutaAll(fk[i])));
 				/*on.add(String.format("%s.%s = %s.%s", tableAlias.get(j.getString("table")),
                         surroundWithQuta(pk[i]), factAlias, surroundWithQuta(fk[i])));*/
 			}
@@ -195,6 +196,11 @@ class KylinModel implements Serializable {
 
 	private String surroundWithQuta(String text) {
 		return QUOTATAION + text + QUOTATAION;
+	}
+	private String surroundWithQutaAll(String text) {
+		String table = StringUtils.substringBefore(text, ".");
+		String column = StringUtils.substringAfter(text, ".");
+		return table + "." + surroundWithQuta(column);
 	}
 
 }

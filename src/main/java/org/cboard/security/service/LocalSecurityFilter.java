@@ -47,20 +47,22 @@ public class LocalSecurityFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
 			throws IOException, ServletException {
+		SecurityContext context = (SecurityContext) ((HttpServletRequest) servletRequest).getSession()
+				.getAttribute("SPRING_SECURITY_CONTEXT");
+		Authentication authentication = null;
+		if(context!=null){
+			authentication = context.getAuthentication();
+		}
 		if ("/render.html".equals(((HttpServletRequest) servletRequest).getServletPath())) {
-			User user = new User("shareUser", "", new ArrayList<>());
-			user.setUserId("1");
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(new ShareAuthenticationToken(user));
-			((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", context);
+			if (authentication == null || ("shareUser").equals(authentication.getName())) {
+				User user = new User("shareUser", "", new ArrayList<>());
+				user.setUserId("1");
+				context.setAuthentication(new ShareAuthenticationToken(user));
+				((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", context);
+			}
 		} else {
-			SecurityContext context = (SecurityContext) ((HttpServletRequest) servletRequest).getSession()
-					.getAttribute("SPRING_SECURITY_CONTEXT");
-			if (context != null) {
-				Authentication authentication = context.getAuthentication();
-				if (authentication != null && ("shareUser").equals(authentication.getName())) {
-					((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", null);
-				}
+			if (authentication != null && ("shareUser").equals(authentication.getName())) {
+				((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", null);
 			}
 		}
 		filterChain.doFilter(servletRequest, servletResponse);

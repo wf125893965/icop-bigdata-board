@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,8 @@ import com.google.common.hash.Hashing;
 public class KylinDataProvider extends DataProvider implements Aggregatable, Initializing {
 
     private static final Logger LOG = LoggerFactory.getLogger(KylinDataProvider.class);
+    
+    private static final String QUOTATAION = "\"";
 
     @DatasourceParameter(label = "Kylin Server *",
             type = DatasourceParameter.Type.Input,
@@ -163,7 +166,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             whereStr = assembleSqlFilter(filterHelpers, "WHERE", kylinModel);
         }
         fsql = "SELECT %s FROM %s %s %s GROUP BY %s ORDER BY %s";
-        exec = String.format(fsql, columnName, tableName, StringUtils.substringBefore(columnName, "."), whereStr, columnName, columnName);
+        exec = String.format(fsql, surroundWithQutaAll(columnName), formatTableName(tableName), StringUtils.substringBefore(columnName, "."), whereStr, surroundWithQutaAll(columnName), surroundWithQutaAll(columnName));
         LOG.info(exec);
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
@@ -189,46 +192,46 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             switch (config.getFilterType()) {
                 case "=":
                 case "≠":
-                    return config.getColumnName() + ("=".equals(config.getFilterType()) ? " IS NULL" : " IS NOT NULL");
+                    return surroundWithQutaAll(config.getColumnName()) + ("=".equals(config.getFilterType()) ? " IS NULL" : " IS NOT NULL");
             }
         }
 
         switch (config.getFilterType()) {
             case "=":
             case "eq":
-                return config.getColumnName() + " IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
+                return surroundWithQutaAll(config.getColumnName()) + " IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
             case "≠":
             case "ne":
-                return config.getColumnName() + " NOT IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
+                return surroundWithQutaAll(config.getColumnName()) + " NOT IN (" + IntStream.range(0, config.getValues().size()).boxed().map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(",")) + ")";
             case ">":
-                return config.getColumnName() + " > " + dimensionConfigHelper.getValueStr(config, 0);
+                return surroundWithQutaAll(config.getColumnName()) + " > " + dimensionConfigHelper.getValueStr(config, 0);
             case "<":
-                return config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 0);
+                return surroundWithQutaAll(config.getColumnName()) + " < " + dimensionConfigHelper.getValueStr(config, 0);
             case "≥":
-                return config.getColumnName() + " >= " + dimensionConfigHelper.getValueStr(config, 0);
+                return surroundWithQutaAll(config.getColumnName()) + " >= " + dimensionConfigHelper.getValueStr(config, 0);
             case "≤":
-                return config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 0);
+                return surroundWithQutaAll(config.getColumnName()) + " <= " + dimensionConfigHelper.getValueStr(config, 0);
             case "(a,b]":
                 if (config.getValues().size() >= 2) {
-                    return "(" + config.getColumnName() + " > '" + dimensionConfigHelper.getValueStr(config, 0) + "' AND " + config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + surroundWithQutaAll(config.getColumnName()) + " > '" + dimensionConfigHelper.getValueStr(config, 0) + "' AND " + config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
             case "[a,b)":
                 if (config.getValues().size() >= 2) {
-                    return "(" + config.getColumnName() + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + surroundWithQutaAll(config.getColumnName()) + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
             case "(a,b)":
                 if (config.getValues().size() >= 2) {
-                    return "(" + config.getColumnName() + " > " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + surroundWithQutaAll(config.getColumnName()) + " > " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " < " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
             case "[a,b]":
                 if (config.getValues().size() >= 2) {
-                    return "(" + config.getColumnName() + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
+                    return "(" + surroundWithQutaAll(config.getColumnName()) + " >= " + dimensionConfigHelper.getValueStr(config, 0) + " AND " + config.getColumnName() + " <= " + dimensionConfigHelper.getValueStr(config, 1) + ")";
                 } else {
                     return null;
                 }
@@ -271,7 +274,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
     private String assembleDimColumns(Stream<DimensionConfig> columnsStream, KylinModel model) {
         StringJoiner columns = new StringJoiner(", ", "", " ");
         columns.setEmptyValue("");
-        columnsStream.map(g -> g.getColumnName()).distinct().filter(e -> e != null).forEach(columns::add);
+        columnsStream.map(g -> surroundWithQutaAll(g.getColumnName())).distinct().filter(e -> e != null).forEach(columns::add);
         return columns.toString();
     }
 
@@ -378,17 +381,17 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
     private BiFunction<ValueConfig, KylinModel, String> toSelect = (config, model) -> {
         switch (config.getAggType()) {
             case "sum":
-                return "SUM(" + config.getColumn() + ") AS sum_" + StringUtils.substringAfter(config.getColumn(), ".");
+                return "SUM(" + surroundWithQutaAll(config.getColumn()) + ") AS sum_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "avg":
-                return "AVG(" + config.getColumn() + ") AS avg_" + StringUtils.substringAfter(config.getColumn(), ".");
+                return "AVG(" + surroundWithQutaAll(config.getColumn()) + ") AS avg_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "max":
-                return "MAX(" + config.getColumn() + ") AS max_" + StringUtils.substringAfter(config.getColumn(), ".");
+                return "MAX(" + surroundWithQutaAll(config.getColumn()) + ") AS max_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "min":
-                return "MIN(" + config.getColumn() + ") AS min_" + StringUtils.substringAfter(config.getColumn(), ".");
+                return "MIN(" + surroundWithQutaAll(config.getColumn()) + ") AS min_" + StringUtils.substringAfter(config.getColumn(), ".");
             case "distinct":
-                return "COUNT(DISTINCT " + config.getColumn() + ") AS count_d_" + StringUtils.substringAfter(config.getColumn(), ".");
+                return "COUNT(DISTINCT " + surroundWithQutaAll(config.getColumn()) + ") AS count_d_" + StringUtils.substringAfter(config.getColumn(), ".");
             default:
-                return "COUNT(" + config.getColumn() + ") AS count_" + StringUtils.substringAfter(config.getColumn(), ".");
+                return "COUNT(" + surroundWithQutaAll(config.getColumn()) + ") AS count_" + StringUtils.substringAfter(config.getColumn(), ".");
         }
     };
 
@@ -411,5 +414,20 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             }
         }
     }
+    
+    private String surroundWithQuta(String text) {
+		return QUOTATAION + text + QUOTATAION;
+	}
+	private String surroundWithQutaAll(String text) {
+		String table = StringUtils.substringBefore(text, ".");
+		String column = StringUtils.substringAfter(text, ".");
+		return table + "." + surroundWithQuta(column);
+	}
+	public String formatTableName(String rawName) {
+		String tmp = rawName.replaceAll("\"", "");
+		StringJoiner joiner = new StringJoiner(".");
+		Arrays.stream(tmp.split("\\.")).map(i -> surroundWithQuta(i)).forEach(joiner::add);
+		return joiner.toString();
+	}
 
 }
