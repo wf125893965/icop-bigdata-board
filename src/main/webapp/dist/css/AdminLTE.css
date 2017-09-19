@@ -100,7 +100,7 @@ hr {
 .content-wrapper,
 .right-side {
   min-height: 100%;
-  background-color: #ecf0f5;
+  background-color: #FAFAFC;
   z-index: 800;
 }
 .main-footer {
@@ -270,6 +270,7 @@ a:focus {
 .main-header .navbar-custom-menu,
 .main-header .navbar-right {
   float: right;
+  margin-right: 20px;  
 }
 @media (max-width: 991px) {
   .main-header .navbar-custom-menu a,
@@ -298,7 +299,7 @@ a:focus {
   font-family: fontAwesome;
 }
 .main-header .sidebar-toggle:before {
-  content: "\f0c9";
+  /* content: "\f0c9"; */
 }
 .main-header .sidebar-toggle:hover {
   color: #fff;
@@ -330,9 +331,9 @@ a:focus {
   transition: width 0.3s ease-in-out;
   display: block;
   float: left;
-  height: 50px;
+  height: 55px;
   font-size: 20px;
-  line-height: 50px;
+  line-height: 55px;
   text-align: center;
   width: 230px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -345,13 +346,14 @@ a:focus {
 }
 .main-header .logo .logo-mini {
   display: none;
+  color: #7D8291;
 }
 .main-header .navbar-brand {
   color: #fff;
 }
 .content-header {
   position: relative;
-  padding: 15px 15px 0 15px;
+  padding: 15px 15px 0px 15px;
 }
 .content-header > h1 {
   margin: 0;
@@ -368,6 +370,7 @@ a:focus {
   background: transparent;
   margin-top: 0;
   margin-bottom: 0;
+  margin-right: 5px;
   font-size: 12px;
   padding: 7px 5px;
   position: absolute;
@@ -550,11 +553,14 @@ a:focus {
   list-style: none;
   margin: 0;
   padding: 0;
+  margin: 10% 2%;
+  color: #7D8291;
+  font-family: NotoSansCJKsc-Bold;
 }
 .sidebar-menu > li {
   position: relative;
   margin: 0;
-  padding: 0;
+  padding: 2% 0;
   cursor: pointer;
 }
 .sidebar-menu > li > a {
@@ -604,6 +610,14 @@ a:focus {
 }
 .sidebar-menu .treeview-menu > li {
   margin: 0;
+  padding: 2% 0 2% 10%;
+  color: #7D8291;
+  font-weight: normal;
+  font-family: NotoSansCJKsc-Bold;
+}
+
+li.item.ng-scope {
+  padding: 2% 0 2% 1.5%;
 }
 .sidebar-menu .treeview-menu > li > a {
   padding: 5px 5px 5px 15px;
@@ -1249,11 +1263,11 @@ a:focus {
 }
 .navbar-nav > .user-menu .user-image {
   float: left;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 0%;
   margin-right: 10px;
-  margin-top: -2px;
+  margin-top: -3px;
 }
 @media (max-width: 767px) {
   .navbar-nav > .user-menu .user-image {
@@ -2333,6 +2347,14 @@ a:focus {
   background: white;
   cursor: inherit;
   display: block;
+}
+.btn-transparent, .btn-transparent:before, .btn-transparent:active {
+	background: none;
+	outline: none;
+	filter:chroma(color=#000000);
+}
+.btn-transparent.btn-sm .iconfont {
+	font-size: 12px;
 }
 .btn-default {
   background-color: #f4f4f4;

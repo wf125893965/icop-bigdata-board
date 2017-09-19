@@ -4,13 +4,17 @@
     <span class="logo-mini"><b>BD</b></span>
     <!-- logo for regular state and mobile devices -->
     <!-- <span class="logo-lg"><b>B</b>ig<b>D</b>ata</span> -->
-    <span class="logo-lg"><b>大数据自助分析平台</b></span>
+    <!-- <span class="logo-lg"><b>大数据自助分析平台</b></span> -->
+    <span class="logo-lg">
+    	<img src="dist/img/logo.png" style="width: 90%;">
+   	</span>
 </a>
 
 <!-- Header Navbar -->
 <nav class="navbar navbar-static-top" role="navigation">
     <!-- Sidebar toggle button-->
     <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <i class="iconfont icon-more"></i>
         <span class="sr-only">{{'HEADER.TOGGLE_NAVIGATION'|translate}}</span>
     </a>
     <!-- Navbar Right Menu -->
@@ -24,6 +28,7 @@
                     <img src="{{user.avatar}}" class="user-image">
                     <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{user.username}}</span>
+                    <i class="iconfont icon-ArrowCopy"></i>
                 </a>
                 <ul class="dropdown-menu">
                     <!-- The user image in the menu -->
