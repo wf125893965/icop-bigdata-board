@@ -55,6 +55,7 @@ public class LocalSecurityFilter implements Filter {
 		}
 		if ("/render.html".equals(((HttpServletRequest) servletRequest).getServletPath())) {
 			if (authentication == null || ("shareUser").equals(authentication.getName())) {
+				context = SecurityContextHolder.getContext();
 				User user = new User("shareUser", "", new ArrayList<>());
 				user.setUserId("1");
 				context.setAuthentication(new ShareAuthenticationToken(user));
