@@ -2,8 +2,9 @@
  * Created by yfyuan on 2016/8/2.
  */
 
-cBoard.controller('dashboardViewCtrl', function ($timeout, $rootScope, $scope, $state, $stateParams, $http, ModalUtils, chartService, $interval, $uibModal, dataService) {
-
+cBoard.controller('dashboardViewCtrl', function ($timeout, $rootScope, $scope, $state, $stateParams, $http, ModalUtils, $filter, chartService, $interval, $uibModal, dataService) {
+	var translate = $filter('translate');
+	
     $scope.loading = true;
     $scope.paramInit = 0;
     $scope.relations = JSON.stringify([]);
@@ -139,7 +140,20 @@ cBoard.controller('dashboardViewCtrl', function ($timeout, $rootScope, $scope, $
             $scope.exportStatus = false;
         });
     };
-
+    
+    $scope.publish = function () {
+        ModalUtils.confirm(translate("COMMON.CONFIRM_PUBLISH_BOARD"), "modal-warning", "lg", function () {
+        	$http.post("dashboard/publishBoard.do", {id: $scope.board.id}).success(function (serviceStatus) {
+                if (serviceStatus.status == '1') {
+                	console.log("board_id ===== ", $scope.board.id);
+                	ModalUtils.alert(serviceStatus.msg, "modal-success", "sm");
+                } else {
+                	ModalUtils.alert(serviceStatus.msg, "modal-warning", "lg");
+                }
+            });
+        });
+    };
+    
     var refreshParam = function () {
         _.each($scope.board.layout.rows, function (row) {
             _.each(row.params, function (param) {

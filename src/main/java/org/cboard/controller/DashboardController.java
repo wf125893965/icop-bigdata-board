@@ -429,6 +429,12 @@ public class DashboardController {
 		return new ResponseEntity<>(boardService.exportBoard(id, userid), headers, HttpStatus.CREATED);
 	}
 
+	@RequestMapping(value = "/publishBoard")
+	public ServiceStatus publishBoard(@RequestParam(name = "id") Long id) {
+		String userId = authenticationService.getCurrentUser().getUserId();
+		return boardService.publishBoard(userId, id);
+	}
+
 	@RequestMapping(value = "/getPreviewUrl")
 	public ServiceStatus getPreviewUrl(@RequestParam(name = "id") Long id) {
 		String userId = authenticationService.getCurrentUser().getUserId();
