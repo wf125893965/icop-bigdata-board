@@ -10,5 +10,5 @@
 	<dubbo:application name="cboard" />
 	<dubbo:provider retries="0" timeout="${dubbo.timeout}" />
 	<dubbo:registry protocol="zookeeper" address="${zookeeper.addr}" />
-	<dubbo:reference id="functionDubboService" interface="com.yyjz.icop.support.api.service.FunctionDubboService" check="false" url="${dubbo.url.functionDubboService}" filter="logcontext" timeout="10000" />
+	<dubbo:reference id="functionDubboService" interface="com.yyjz.icop.support.api.service.FunctionDubboService" check="false" url="${dubbo.url.functionDubboService}" timeout="10000" />
 </beans>
