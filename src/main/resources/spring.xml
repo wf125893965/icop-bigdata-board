@@ -15,5 +15,6 @@
     </bean>
 
     <!--<import resource="spring-cacher-redis.xml"/>-->
+    <import resource="dubbo-provider.xml"/>
     <import resource="spring-cacher-ehcache.xml"/>
 </beans>
