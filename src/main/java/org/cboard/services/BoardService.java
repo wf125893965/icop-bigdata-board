@@ -2,9 +2,7 @@ package org.cboard.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +78,8 @@ public class BoardService {
 				JSONObject ww = (JSONObject) w;
 				Long widgetId = ww.getLong("widgetId");
 				DashboardWidget widget = widgetDao.getWidget(widgetId);
-				JSONObject dataJson = JSONObject.parseObject(widget.getData());
+				// JSONObject dataJson =
+				// JSONObject.parseObject(widget.getData());
 				// DataProviderResult data =
 				// dataProviderService.getData(dataJson.getLong("datasource"),
 				// Maps.transformValues(dataJson.getJSONObject("query"),
@@ -167,10 +166,10 @@ public class BoardService {
 			DashboardBoard board = boardDao.getBoard(id);
 
 			List<FunctionVO> functions = new ArrayList<FunctionVO>();
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 			FunctionVO function = new FunctionVO();
-			function.setNodeCode("BDROP_" + SystemUtil.getRandomNumber());
-			function.setNodeName(board.getName() + "_" + formatter.format(new Date()));
+			String randomNumber = SystemUtil.getRandomNumber();
+			function.setNodeCode("BD_" + randomNumber);
+			function.setNodeName(board.getName() + "_" + randomNumber);
 			function.setXmlTemplate(xmlTemplate);
 			function.setModuleId(publishModuleId);
 			function.setDivId(function.getNodeCode());
