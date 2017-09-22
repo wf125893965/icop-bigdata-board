@@ -111,6 +111,8 @@
       "CANCEL": "Cancel",
       "SAVE": "Save",
       "PREVIEW": "Preview",
+      "CHART_PREVIEW": "Chart Preview",
+      "CHART_OPTION": "Chart Option",
       "EXIST_QUERY": "Exist Cube",
       "NEW_QUERY": "New Query",
       "SWITCH": "Switch",

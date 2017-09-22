@@ -112,6 +112,8 @@
       "CANCEL": "取消",
       "SAVE": "保存",
       "PREVIEW": "预览",
+      "CHART_PREVIEW": "预览图表",
+      "CHART_OPTION": "图表设置",
       "EXIST_QUERY": "已有查询",
       "NEW_QUERY": "新建查询",
       "SWITCH": "切换",
