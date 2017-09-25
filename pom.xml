@@ -332,8 +332,8 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<finalName>cboard</finalName>
+	<!-- <build>
+		<finalName>icop-bigdata-board</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -348,5 +348,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</build> -->
 </project>
