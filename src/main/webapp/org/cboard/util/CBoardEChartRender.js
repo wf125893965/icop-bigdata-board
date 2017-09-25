@@ -12,7 +12,8 @@ var echartsBasicOption = {
         containLabel: false
     },
     tooltip: {
-        trigger: 'axis'
+        trigger: 'axis',
+        backgroundColor: '#4A6786'
     },
     legend: {
         x: 'left',
@@ -45,6 +46,13 @@ CBoardEChartRender.prototype.chart = function (group, persist) {
         options.grid.top = '5%';
         options.legend.show =false;
     }
+    
+    options.color = ['#4AA6FC', '#58CCFF', '#BDE4FF', '#FFB204', '#AB7EFF', '#6F82FF', '#D0CBFF', '#76DDFB', '#A698FF', '#41D4A1', '#75E5A1'];
+    /*options.tooltip = {
+        trigger: 'axis',
+        backgroundColor: 'rgba(74,103,134,0.60)'
+    };*/
+    
     if(persist){
         options.animation = false;
     }
