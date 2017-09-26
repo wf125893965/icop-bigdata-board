@@ -6,7 +6,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>icop-bigdata-board</name>
-	<description />
+	<parent>
+		<groupId>com.yonyouccs</groupId>
+		<artifactId>icop-parent-pom</artifactId>
+		<version>0.0.3-SNAPSHOT</version>
+	</parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>4.3.7.RELEASE</spring.version>
