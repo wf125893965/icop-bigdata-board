@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.cboard.dao.BoardDao;
 import org.cboard.dao.WidgetDao;
@@ -47,14 +49,11 @@ public class BoardService {
 	@Autowired
 	private FunctionDubboService functionDubboService;
 
+	@Autowired
+	private HttpServletRequest request;
+
 	@Value("${module.id.report}")
 	private String publishModuleId;
-
-	// http://localhost:8180/cboard/render.html?sid=d9e0ba53c2594c459e113e7bb29c877b#?id=4&pid=1f08fe42cf08431f8412755e609f75fb
-	@Value("${web_context}")
-	private String frontProjectName;
-
-	// private String listUrl = "reportDesign/view?reportView=";
 
 	private String divClass = "patch-material";
 
@@ -174,7 +173,8 @@ public class BoardService {
 			function.setModuleId(publishModuleId);
 			function.setDivId(function.getNodeCode());
 			function.setDivClass(divClass);
-			function.setFrontProjectname(frontProjectName);
+			String frontProjectName = request.getContextPath();
+			function.setFrontProjectname(frontProjectName.substring(1, frontProjectName.length()));
 
 			String phantomUrl = persistService.getPhantomUrl(id, userId);
 			// http://localhost:8180/cboard/render.html?sid=d9e0ba53c2594c459e113e7bb29c877b#?id=4&pid=1f08fe42cf08431f8412755e609f75fb
