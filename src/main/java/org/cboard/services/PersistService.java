@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.cboard.security.service.LocalSecurityFilter;
 import org.cboard.services.persist.PersistContext;
+import org.cboard.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ public class PersistService {
 	private static final Logger LOG = LoggerFactory.getLogger(PersistService.class);
 
 	// @Value("${phantomjs_path}")
-	private String phantomjsPath = new File(
-			this.getClass().getResource("/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile()).getPath();
+	// private String phantomjsPath = new File(
+	// this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile()).getPath();
 	private String scriptPath = new File(this.getClass().getResource("/phantom.js").getFile()).getPath();
 
 	@Value("${web_port}")
@@ -59,6 +60,19 @@ public class PersistService {
 					.append("&pid=").append(persistId).toString();
 			scriptPath = URLDecoder.decode(scriptPath, "UTF-8"); // decode
 																	// whitespace
+
+			String os = SystemUtil.getOsName();
+			String phantomjsPath = null;
+			if (os != null && os.toLowerCase().indexOf("linux") > -1) {
+				phantomjsPath = new File(
+						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs").getFile())
+								.getPath();
+			} else if (os != null && os.toLowerCase().startsWith("win")) {
+				phantomjsPath = new File(
+						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile())
+								.getPath();
+			}
+
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
 			LOG.info("Run phantomjs command: {}", cmd);
 			process = Runtime.getRuntime().exec(cmd);

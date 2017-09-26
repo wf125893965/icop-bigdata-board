@@ -27,4 +27,8 @@ public abstract class SystemUtil {
 		result.append(LocalDateTime.now().format(FORMAT)).append(random.nextInt(START, END));
 		return result.toString();
 	}
+
+	public static String getOsName() {
+		return System.getProperties().getProperty("os.name");
+	}
 }
