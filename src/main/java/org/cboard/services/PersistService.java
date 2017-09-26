@@ -27,8 +27,9 @@ public class PersistService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PersistService.class);
 
-	@Value("${phantomjs_path}")
-	private String phantomjsPath;
+	// @Value("${phantomjs_path}")
+	private String phantomjsPath = new File(
+			this.getClass().getResource("/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile()).getPath();
 	private String scriptPath = new File(this.getClass().getResource("/phantom.js").getFile()).getPath();
 
 	@Value("${web_port}")
