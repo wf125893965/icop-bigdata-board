@@ -13,7 +13,9 @@
 		class="com.yonyou.construction.icop.config.IcopPropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>classpath:*.properties</value>
+				<value>classpath:config.properties</value>
+				<value>classpath:dubbo.properties</value>
+				<value>classpath:log4j.properties</value>
 			</list>
 		</property>
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
