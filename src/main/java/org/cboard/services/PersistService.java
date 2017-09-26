@@ -15,7 +15,6 @@ import org.cboard.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -28,15 +27,7 @@ public class PersistService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PersistService.class);
 
-	// @Value("${phantomjs_path}")
-	// private String phantomjsPath = new File(
-	// this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile()).getPath();
 	private String scriptPath = new File(this.getClass().getResource("/phantom.js").getFile()).getPath();
-
-	@Value("${web_port}")
-	private String webPort;
-	@Value("${web_context}")
-	private String webContext;
 
 	@Autowired
 	private HttpServletRequest request;
@@ -47,9 +38,9 @@ public class PersistService {
 		String persistId = UUID.randomUUID().toString().replaceAll("-", "");
 		Process process = null;
 		try {
-			String web = webPort + "/";
-			if (StringUtils.isNotBlank(webContext)) {
-				web += webContext + "/";
+			String web = request.getServerPort() + "";
+			if (StringUtils.isNotBlank(request.getContextPath())) {
+				web += request.getContextPath() + "/";
 			}
 			PersistContext context = new PersistContext(dashboardId);
 			TASK_MAP.put(persistId, context);
@@ -59,7 +50,6 @@ public class PersistService {
 					.append(web).append("render.html").append("?sid=").append(uuid).append("#?id=").append(dashboardId)
 					.append("&pid=").append(persistId).toString();
 			scriptPath = URLDecoder.decode(scriptPath, "UTF-8"); // decode
-																	// whitespace
 
 			String os = SystemUtil.getOsName();
 			String phantomjsPath = null;
@@ -93,9 +83,9 @@ public class PersistService {
 
 	public String getPhantomUrl(Long dashboardId, String userId) {
 		String persistId = UUID.randomUUID().toString().replaceAll("-", "");
-		String web = webPort + "/";
-		if (StringUtils.isNotBlank(webContext)) {
-			web += webContext + "/";
+		String web = request.getServerPort() + "";
+		if (StringUtils.isNotBlank(request.getContextPath())) {
+			web += request.getContextPath() + "/";
 		}
 		PersistContext context = new PersistContext(dashboardId);
 		TASK_MAP.put(persistId, context);
