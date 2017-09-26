@@ -10,12 +10,9 @@ import org.cboard.services.ServiceStatus;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +26,7 @@ import java.util.TimeZone;
  * Created by yfyuan on 2017/2/17.
  */
 @Service
-public class JobService implements InitializingBean {
+public class JobService{
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
@@ -153,8 +150,9 @@ public class JobService implements InitializingBean {
         return new ServiceStatus(ServiceStatus.Status.Success, "success");
     }
 
-    @Override
+    /*@Override
     public void afterPropertiesSet() throws Exception {
         configScheduler();
-    }
+    }*/
+
 }
