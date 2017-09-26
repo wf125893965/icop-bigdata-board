@@ -14,11 +14,11 @@
 	</parent>
 	
 	<build>
-		<finalName>icop-data-board</finalName>
+		<finalName>icop-bigdata-board</finalName>
 	</build>
 	
 	<properties>
-		<app.name>icop-data-board</app.name>
+		<app.name>icop-bigdata-board</app.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<spring-security.version>4.1.0.RELEASE</spring-security.version>
