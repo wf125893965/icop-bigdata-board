@@ -9,7 +9,7 @@
 
     <!-- <context:property-placeholder location="classpath:*.properties"/> -->
 
-	<bean id="resourceWebConfigurer"
+	<bean id="propertyConfigurer"
 		class="com.yonyou.construction.icop.config.IcopPropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
