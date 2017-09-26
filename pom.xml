@@ -6,12 +6,19 @@
 	<version>1.5.0</version>
 	<packaging>war</packaging>
 	<name>icop-bigdata-board</name>
-	<dependency>
+	
+	<parent>
 		<groupId>com.yonyouccs</groupId>
 		<artifactId>icop-parent-pom</artifactId>
 		<version>1.5.0-RELEASE</version>
-	</dependency>
+	</parent>
+	
+	<build>
+		<finalName>icop-data-board</finalName>
+	</build>
+	
 	<properties>
+		<app.name>icop-data-board</app.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<spring-security.version>4.1.0.RELEASE</spring-security.version>
