@@ -3,7 +3,26 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
+	<context:annotation-config />
+	<!-- 自动扫描且只扫描@Controller -->
+	<context:component-scan base-package="org.cboard"
+		use-default-filters="false">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<bean id="webPropertyConfigurer"
+		class="com.yonyou.construction.icop.config.IcopPropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
 
+	<mvc:default-servlet-handler />
+	<mvc:annotation-driven />
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix">
             <value>/</value>

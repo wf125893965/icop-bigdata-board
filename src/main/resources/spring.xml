@@ -8,19 +8,18 @@
                             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <!-- <context:property-placeholder location="classpath:*.properties"/> -->
-
+	<context:annotation-config />
+    <context:component-scan base-package="org.cboard"/>
 	<bean id="propertyConfigurer"
 		class="com.yonyou.construction.icop.config.IcopPropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
 				<value>classpath:config.properties</value>
 				<value>classpath:dubbo.properties</value>
-				<value>classpath:log4j.properties</value>
 			</list>
 		</property>
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
 	</bean>
-    <context:component-scan base-package="org.cboard"/>
 
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
