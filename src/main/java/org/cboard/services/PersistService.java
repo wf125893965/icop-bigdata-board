@@ -57,11 +57,11 @@ public class PersistService {
 				File f = new File(this.getClass().getResource("/phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs").getFile());
 				if(f.exists()){
 					LOG.info("Is Execute allow : {}", f.canExecute());
+					phantomjsPath = f.getPath();
 				}
 				if(!f.canExecute()){
 					f.setExecutable(true);
 				}
-				phantomjsPath = f.getPath();
 			} else if (os != null && os.toLowerCase().startsWith("win")) {
 				phantomjsPath = new File(
 						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile())
