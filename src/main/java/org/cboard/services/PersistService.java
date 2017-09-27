@@ -54,15 +54,19 @@ public class PersistService {
 			String os = SystemUtil.getOsName();
 			String phantomjsPath = null;
 			if (os != null && os.toLowerCase().indexOf("linux") > -1) {
-				phantomjsPath = new File(
-						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs").getFile())
-								.getPath();
+				File f = new File(this.getClass().getResource("/phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs").getFile());
+				if(f.exists()){
+					LOG.info("Is Execute allow : {}", f.canExecute());
+					phantomjsPath = f.getPath();
+				}
+				if(!f.canExecute()){
+					f.setExecutable(true);
+				}
 			} else if (os != null && os.toLowerCase().startsWith("win")) {
 				phantomjsPath = new File(
 						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile())
 								.getPath();
 			}
-
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
 			LOG.info("Run phantomjs command: {}", cmd);
 			process = Runtime.getRuntime().exec(cmd);
