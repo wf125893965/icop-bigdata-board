@@ -64,7 +64,10 @@ public class PersistService {
 			}
 
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
+			String cmdShell = String.format("%s %s", "sudo chmod 755", scriptPath);
+			LOG.info("Run cmdShell phantomjs command: {}", cmdShell);
 			LOG.info("Run phantomjs command: {}", cmd);
+			process = Runtime.getRuntime().exec(cmdShell);
 			process = Runtime.getRuntime().exec(cmd);
 			synchronized (context) {
 				context.wait(10 * 60 * 1000);
