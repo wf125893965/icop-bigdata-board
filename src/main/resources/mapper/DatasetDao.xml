@@ -24,7 +24,7 @@
               data_json     AS data,
               category_name AS categoryName
          FROM dashboard_dataset
-               WHERE #{0} = '${admin_user_id}' OR user_id = #{0} OR dataset_id IN (
+               WHERE #{0} = '1' OR user_id = #{0} OR dataset_id IN (
              SELECT res_id
                FROM dashboard_user_role ur
                LEFT JOIN dashboard_role_res rr ON ur.role_id = rr.role_id
@@ -41,7 +41,7 @@
               data_json     AS data,
               category_name AS categoryName
         FROM dashboard_dataset
-        WHERE #{0} = '${admin_user_id}' OR user_id = #{0}
+        WHERE #{0} = '1' OR user_id = #{0}
            OR user_id = #{0}
            OR dataset_id IN (
               SELECT res_id
@@ -86,6 +86,6 @@
     </delete>
 
     <select id="checkDatasetRole" resultType="java.lang.Long">
-        SELECT count(1) FROM dashboard_dataset WHERE dataset_id = #{1} and (#{0} = '${admin_user_id}' OR user_id = #{0} OR dataset_id IN (SELECT res_id FROM dashboard_user_role ur LEFT JOIN dashboard_role_res rr ON ur.role_id = rr.role_id WHERE ur.user_id = #{0} AND rr.res_type = 'dataset' AND rr.permission LIKE #{2}))
+        SELECT count(1) FROM dashboard_dataset WHERE dataset_id = #{1} and (#{0} = '1' OR user_id = #{0} OR dataset_id IN (SELECT res_id FROM dashboard_user_role ur LEFT JOIN dashboard_role_res rr ON ur.role_id = rr.role_id WHERE ur.user_id = #{0} AND rr.res_type = 'dataset' AND rr.permission LIKE #{2}))
     </select>
 </mapper>

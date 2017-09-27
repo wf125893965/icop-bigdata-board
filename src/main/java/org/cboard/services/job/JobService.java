@@ -26,7 +26,7 @@ import java.util.TimeZone;
  * Created by yfyuan on 2017/2/17.
  */
 @Service
-public class JobService{
+public class JobService implements InitializingBean{
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
@@ -150,9 +150,9 @@ public class JobService{
         return new ServiceStatus(ServiceStatus.Status.Success, "success");
     }
 
-    /*@Override
+    @Override
     public void afterPropertiesSet() throws Exception {
         configScheduler();
-    }*/
+    }
 
 }

@@ -16,7 +16,7 @@
                b.category_name AS categoryName
           FROM dashboard_board a
           LEFT JOIN dashboard_category b ON a.category_id = b.category_id
-         WHERE #{0} = '${admin_user_id}' OR a.user_id = #{0} OR a.board_id IN (
+         WHERE #{0} = '1' OR a.user_id = #{0} OR a.board_id IN (
              SELECT res_id
                FROM dashboard_user_role ur
                LEFT JOIN dashboard_role_res rr ON ur.role_id = rr.role_id
@@ -34,7 +34,7 @@
                b.category_name AS categoryName
           FROM dashboard_board a
           LEFT JOIN dashboard_category b ON a.category_id = b.category_id
-         WHERE #{0} = '${admin_user_id}'
+         WHERE #{0} = '1'
             OR a.user_id = #{0}
             OR a.board_id IN (
                 SELECT res_id
@@ -91,7 +91,7 @@
         SELECT count(1)
           FROM dashboard_board
          WHERE board_id = #{1}
-               AND (#{0} = '${admin_user_id}'
+               AND (#{0} = '1'
                  OR user_id = #{0}
                  OR board_id IN (
                     SELECT res_id
