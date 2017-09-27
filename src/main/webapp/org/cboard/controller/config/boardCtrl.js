@@ -279,6 +279,28 @@ cBoard.controller('boardCtrl', function ($rootScope, $scope, $http, ModalUtils, 
         });
     };
 
+    $scope.publish = function (boardId) {
+        ModalUtils.confirm(translate("COMMON.CONFIRM_PUBLISH_BOARD"), "modal-warning", "lg", function () {
+        	$scope.saveBoard()
+            .then(function () {
+            	if (!boardId) {
+            		boardId = $scope.curBoard.id;
+                }
+	        	$http.post("dashboard/publishBoard.do", {id: boardId}).success(function (serviceStatus) {
+	            }).error(function (serviceStatus) {
+        			ModalUtils.alert(serviceStatus.msg, "modal-warning", "lg");
+                });
+//	        	$http.post("dashboard/publishBoard.do", {id: boardId}).success(function (serviceStatus) {
+//	        		if (serviceStatus.status == '1') {
+//	        			ModalUtils.alert(serviceStatus.msg, "modal-success", "sm");
+//	        		} else {
+//	        			ModalUtils.alert(serviceStatus.msg, "modal-warning", "lg");
+//	        		}
+//	        	});
+        	});
+        });
+    };
+
     $scope.saveBoard = function () {
         if (!validate()) {
             return;
