@@ -41,7 +41,7 @@ public class AggregationBuilder {
         return json("date_histogram",
                 json().put("field", fieldName)
                         .put("format", format)
-                        .put("time_zone", tz.getID())
+                        .put("time_zone", "Asia/Shanghai")
                         .put("interval", interval)
                         .put("min_doc_count", min_doc_count)
                         .put("extended_bounds", extendedBound)
