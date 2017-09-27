@@ -36,6 +36,8 @@ public class AggregationBuilder {
             extendedBound.put("max", timestamp2DateStr(max, format));
         }
         TimeZone tz = Calendar.getInstance().getTimeZone();
+        System.out.println("tz="+tz);
+        System.out.println("tz.getDisplayName()="+tz.getDisplayName());
         return json("date_histogram",
                 json().put("field", fieldName)
                         .put("format", format)
