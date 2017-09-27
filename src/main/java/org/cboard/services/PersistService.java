@@ -37,6 +37,7 @@ public class PersistService {
 	public PersistContext persist(Long dashboardId, String userId) {
 		String persistId = UUID.randomUUID().toString().replaceAll("-", "");
 		Process process = null;
+		Process process1 = null;
 		try {
 			String web = request.getServerPort() + "";
 			if (StringUtils.isNotBlank(request.getContextPath())) {
@@ -64,18 +65,23 @@ public class PersistService {
 			}
 
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
-			String cmdShell = String.format("%s %s", "sudo chmod 755", scriptPath);
+			String cmdShell = String.format("%s %s", "sudo chmod 755", phantomjsPath);
 			LOG.info("Run cmdShell phantomjs command: {}", cmdShell);
 			LOG.info("Run phantomjs command: {}", cmd);
-			process = Runtime.getRuntime().exec(cmdShell);
+			process1 = Runtime.getRuntime().exec(cmdShell);
+//			process = Runtime.getRuntime().exec(cmdShell);
 			process = Runtime.getRuntime().exec(cmd);
 			synchronized (context) {
 				context.wait(10 * 60 * 1000);
 			}
+			process1.destroy();
 			process.destroy();
 			TASK_MAP.remove(persistId);
 			return context;
 		} catch (Exception e) {
+			if (process1 != null) {
+				process1.destroy();
+			}
 			if (process != null) {
 				process.destroy();
 			}
