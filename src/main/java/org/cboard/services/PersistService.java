@@ -58,25 +58,21 @@ public class PersistService {
 				if(f.exists()){
 					LOG.info("Is Execute allow : {}", f.canExecute());
 				}
-				f.setExecutable(true);
+				if(!f.canExecute()){
+					f.setExecutable(true);
+				}
 				phantomjsPath = f.getPath();
 			} else if (os != null && os.toLowerCase().startsWith("win")) {
 				phantomjsPath = new File(
 						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile())
 								.getPath();
 			}
-
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
-//			String cmdShell = String.format("%s %s", "sudo chmod 755", phantomjsPath);
-//			LOG.info("Run cmdShell phantomjs command: {}", cmdShell);
 			LOG.info("Run phantomjs command: {}", cmd);
-//			process1 = Runtime.getRuntime().exec(cmdShell);
-//			process = Runtime.getRuntime().exec(cmdShell);
 			process = Runtime.getRuntime().exec(cmd);
 			synchronized (context) {
 				context.wait(10 * 60 * 1000);
 			}
-//			process1.destroy();
 			process.destroy();
 			TASK_MAP.remove(persistId);
 			return context;
