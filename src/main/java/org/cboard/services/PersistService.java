@@ -64,8 +64,7 @@ public class PersistService {
 				}
 			} else if (os != null && os.toLowerCase().startsWith("win")) {
 				phantomjsPath = new File(
-						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile())
-								.getPath();
+						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile()).getPath();
 			}
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
 			LOG.info("Run phantomjs command: {}", cmd);
