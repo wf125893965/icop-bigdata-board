@@ -1586,12 +1586,12 @@ li.item.ng-scope {
   color: rgba(255, 255, 255, 0.8);
   display: block;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
   text-decoration: none;
 }
 .small-box > .small-box-footer:hover {
   color: #fff;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.1);
 }
 .small-box h3 {
   font-size: 38px;
@@ -4606,7 +4606,7 @@ table.text-center th {
   background-color: #01ff70 !important;
 }
 .bg-orange {
-  background-color: #ff851b !important;
+  background-color: #ff7e39 !important;
 }
 .bg-fuchsia {
   background-color: #f012be !important;
@@ -4623,6 +4623,15 @@ table.text-center th {
 }
 .bg-black-active {
   background-color: #000000 !important;
+}
+.bg-light-blue {
+  background-color: #51b6ff !important;
+}
+.bg-light-purple {
+  background-color: #6f82ff !important;
+}
+.bg-light-yellow {
+  background-color: #ffbe04 !important;
 }
 .bg-red-active{
   background-color: #d33724 !important;

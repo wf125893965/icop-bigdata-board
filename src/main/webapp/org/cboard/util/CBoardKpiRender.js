@@ -44,8 +44,8 @@ CBoardKpiRender.prototype.template =
                <div class='icon'> \
                    <i class='ion ion-stats-bars'></i> \
                </div> \
-               <a class='small-box-footer'>\
-                   <span ng-click='reload(widget)' style='cursor: pointer'>{refresh} <i class='fa fa-refresh'></i></span>\
-                   <span ng-click='config(widget)' ng-if='widgetCfg' style='cursor: pointer'>{edit} <i class='fa fa-wrench'></i></span>\
+               <a class='small-box-footer' style='font-size: 14px;'>\
+                   <span ng-click='reload(widget)' style='cursor: pointer; margin-right: 20%;'>{refresh} <i class='iconfont icon-xingzhuang' style='font-size: 14px;'></i></span>\
+                   <span ng-click='config(widget)' ng-if='widgetCfg' style='cursor: pointer; margin-left: 20%;'>{edit} <i class='iconfont icon-bianji' style='font-size: 14px;'></i></span>\
                </a>\
             </div>";

@@ -165,10 +165,6 @@ public abstract class DataProvider {
 			if (null != cookie) {
 				list.add(cookie.getValue());
 			}
-
-			list.add("curOrg1");
-			list.add("curOrg2");
-			list.add("curOrg3");
 		} else if ("{subOrg}".equals(value)) {
 			list.add("subOrg1");
 			list.add("subOrg2");
