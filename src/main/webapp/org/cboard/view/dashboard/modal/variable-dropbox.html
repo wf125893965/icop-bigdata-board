@@ -11,12 +11,13 @@
     <li ng-click="param.values[_i]='{userName}'"><a>{{'COMMON.USER_NAME'|translate}}</a></li>
     <li ng-click="param.values[_i]='{userRoles}'"><a>{{'COMMON.USER_ROLES'|translate}}</a></li>
     
+    <!--  && param.name?param.name:param.col=='SP_MATERIAL_CATEGORY1.NAME' -->
     <li ng-click="param.values[_i]='{curOrg}'" 
-    	ng-if="operate.equal && param.name?param.name:param.col=='SP_MATERIAL_CATEGORY1.NAME'" >
+    	ng-if="operate.equal" >
     	<a>当前组织</a>
    	</li>
     <li ng-click="param.values[_i]='{subOrg}'" 
-    	ng-if="operate.equal && param.name?param.name:param.col=='SP_MATERIAL_CATEGORY1.NAME'" >
+    	ng-if="operate.equal" >
     	<a>下级组织</a>
    	</li>
 </ul>
