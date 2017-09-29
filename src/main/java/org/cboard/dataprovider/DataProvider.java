@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.cboard.dataprovider.aggregator.Aggregatable;
 import org.cboard.dataprovider.aggregator.InnerAggregator;
 import org.cboard.dataprovider.config.AggConfig;
@@ -34,6 +35,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.googlecode.aviator.AviatorEvaluator;
+import com.yyjz.icop.orgcenter.company.service.ICompanyService;
+import com.yyjz.icop.orgcenter.company.vo.CompanyVO;
 
 /**
  * Created by zyong on 2017/1/9.
@@ -44,6 +47,8 @@ public abstract class DataProvider {
 	private AuthenticationService authenticationService;
 	@Autowired
 	private RoleService roleService;
+	@Autowired
+	private ICompanyService iCompanyService;
 	private InnerAggregator innerAggregator;
 	protected Map<String, String> dataSource;
 	protected Map<String, String> query;
@@ -166,9 +171,18 @@ public abstract class DataProvider {
 				list.add(cookie.getValue());
 			}
 		} else if ("{subOrg}".equals(value)) {
-			list.add("subOrg1");
-			list.add("subOrg2");
-			list.add("subOrg3");
+			Cookie cookie = CookiesUtil.getCookieByName(request, "companyId");
+			if (null != cookie) {
+				String companyId = cookie.getValue();
+				List<CompanyVO> CompanyVOLst = iCompanyService.getChildrenCompanyById(companyId);
+				for (CompanyVO vo : CompanyVOLst) {
+					if (!StringUtils.isEmpty(vo.getId()))
+						list.add(vo.getId());
+				}
+				if (list.size() == 0) {
+					list.add(companyId);
+				}
+			}
 		} else {
 			list.add(AviatorEvaluator.compile(value.substring(1, value.length() - 1), true).execute().toString());
 		}
