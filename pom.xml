@@ -6,17 +6,17 @@
 	<version>1.5.0</version>
 	<packaging>war</packaging>
 	<name>icop-bigdata-board</name>
-	
+
 	<parent>
 		<groupId>com.yonyouccs</groupId>
 		<artifactId>icop-parent-pom</artifactId>
 		<version>1.5.0-RELEASE</version>
 	</parent>
-	
+
 	<build>
 		<finalName>icop-bigdata-board</finalName>
 	</build>
-	
+
 	<properties>
 		<app.name>icop-bigdata-board</app.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -345,6 +345,11 @@
 			<groupId>com.101tec</groupId>
 			<artifactId>zkclient</artifactId>
 			<version>0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.yyjz</groupId>
+			<artifactId>icop-orgcenter-api</artifactId>
+			<version>1.5.37</version>
 		</dependency>
 	</dependencies>
 
