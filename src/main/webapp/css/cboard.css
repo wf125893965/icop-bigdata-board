@@ -21,8 +21,8 @@
 }
 
 .tableView table {
-    border-bottom: 1px solid #d5d5d5;
-    border-right: 1px solid #d5d5d5;
+    border-bottom: 1px solid #F1F2F5;
+    border-right: 1px solid #F1F2F5;
     margin-bottom: 0;
     /*table-layout: fixed;*/
     width: auto;
@@ -38,13 +38,13 @@
     white-space: nowrap;
     font-weight: normal;
     font-size: 10px;
-    padding: 3px 0px;
+    padding: 5px 1px;
 }
 
 .tableView th {
-    font-size: 10px;
+    font-size: 12px;
     /*font-weight: normal;*/
-    /*padding: 3px 9px 3px 4px;*/
+    padding: 5px 1px;
 }
 
 .tableView .table {
@@ -57,13 +57,13 @@
 
 
 .tableView table th.row {
-    border-top: 1px solid #d5d5d5;
+    border-top: 1px solid #F1F2F5;
     white-space: nowrap;
     text-align: center;
 }
 .tableView table td.data, .tableView table th.header_key {
-    border-left: 1px solid #d5d5d5;
-    border-top: 1px solid #d5d5d5;
+    border-left: 1px solid #F1F2F5;
+    border-top: 1px solid #F1F2F5;
     text-align: center;
     white-space: nowrap;
 }
@@ -78,22 +78,22 @@
     background: none;
 }
 .tableView table th {
-    background: #f9f9f9;
-    border-left: 1px solid #d5d5d5;
+    background: #F8FAFD;
+    border-left: 1px solid #F1F2F5;
 }
 .tableView th.col {
-    border-top: 1px solid #d5d5d5;
+    border-top: 1px solid #F1F2F5;
 }
 .tableView th.all_null{
     background: none;
     border: 0;
 }
 .tableView th.row_null{
-    border-left: 1px solid #d5d5d5;
+    border-left: 1px solid #F1F2F5;
 }
 .tableView th.col_null{
     border-left: 0px;
-    border-top: 1px solid #d5d5d5;
+    border-top: 1px solid #F1F2F5;
 }
 .tableView .table_drill_cell {
     color: royalblue;
@@ -319,8 +319,8 @@ span.ellipse {
     width: 99%;
     height: 30px;
     margin: 0 0 10px 0;
-    box-shadow: 1px 1px 5px #ccc;
-    background-color: #F9F9F9;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.10);
+    background-color: #F8FAFD;
 }
 .info {
     display: inline-block;
