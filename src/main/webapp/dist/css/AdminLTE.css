@@ -1621,10 +1621,10 @@ li.item.ng-scope {
   transition: all 0.3s linear;
   position: absolute;
   top: -10px;
-  right: 10px;
+  right: 20px;
   z-index: 0;
   font-size: 90px;
-  color: rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.06);
 }
 .small-box:hover {
   text-decoration: none;
