@@ -61,7 +61,8 @@
                             <div class="btn btn-default btn-flat" ng-click="changePwd()">{{'HEADER.CHANGE_PASSWORD'|translate}}</div>
                         </div>
                         <div class="pull-right">
-                            <a href="j_spring_cas_security_logout" class="btn btn-default btn-flat">{{'HEADER.SIGN_OUT'|translate}}</a>
+                            <a id="logoutBtn" href="j_spring_cas_security_logout" ng-hide="true" class="btn btn-default btn-flat">{{'HEADER.SIGN_OUT'|translate}}</a>
+                            <div class="btn btn-default btn-flat" onclick="logout()">{{'HEADER.SIGN_OUT'|translate}}</div>
                         </div>
                     </li>
                 </ul>
@@ -69,3 +70,10 @@
         </ul>
     </div>
 </nav>
+<script type="text/javascript">
+function logout(){
+	// 删除sessionStorage，下次登录不回显目录位置
+	sessionStorage.removeItem('menuActive');
+	document.getElementById('logoutBtn').click();
+}
+</script>
