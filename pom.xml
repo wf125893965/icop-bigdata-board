@@ -348,6 +348,11 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>0.3</version>
+		</dependency>
+		<dependency>
 			<groupId>com.yyjz</groupId>
 			<artifactId>icop-orgcenter-api</artifactId>
 			<version>1.5.37</version>
