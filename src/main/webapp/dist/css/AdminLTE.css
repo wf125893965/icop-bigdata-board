@@ -1186,7 +1186,7 @@ li.item.ng-scope {
 .navbar-nav > .user-menu > .dropdown-menu {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
-  padding: 1px 0 0 0;
+  padding: 0;
   border-top-width: 0;
   width: 280px;
 }
@@ -1210,8 +1210,8 @@ li.item.ng-scope {
 }
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header > p {
   z-index: 5;
-  color: #fff;
-  color: rgba(255, 255, 255, 0.8);
+  color: #222;
+  /* color: rgba(255, 255, 255, 0.8); */
   font-size: 17px;
   margin-top: 10px;
 }
@@ -1242,8 +1242,8 @@ li.item.ng-scope {
   }
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer {
-  background-color: #f9f9f9;
-  padding: 10px;
+  background-color: #f8fafe;
+  padding: 0px 25px 10px 25px;
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer:before,
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer:after {
@@ -1335,6 +1335,8 @@ li.item.ng-scope {
   position: absolute;
   right: 0;
   left: auto;
+  border:1px solid #E4E7ED !important;
+  margin-top: 4px;
 }
 @media (max-width: 991px) {
   .navbar-custom-menu > .navbar-nav {
