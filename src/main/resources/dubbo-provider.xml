@@ -13,5 +13,5 @@
 	<dubbo:reference id="functionDubboService" interface="com.yyjz.icop.support.api.service.FunctionDubboService" check="false" url="${dubbo.url.functionDubboService}" timeout="10000" />
 	<dubbo:reference id="companyService"
 		interface="com.yyjz.icop.orgcenter.company.service.ICompanyService"
-		url="${dubbo.url.orgcenter}" check="false" timeout="10000" />
+		url="${dubbo.url.orgcenter}" check="false" timeout="10000" filter="logcontext"/>
 </beans>
