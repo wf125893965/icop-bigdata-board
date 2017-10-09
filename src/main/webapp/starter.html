@@ -137,6 +137,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 width: auto;
             }
         }
+        .content-center {
+			display: flex; 
+			justify-content: center; 
+			align-items: center;
+		}
+		h4, h5 {
+		    margin: 20px 0;
+		}
+		h4 {
+		    color: #222;
+		}
+		h5 {
+		    color: #7D8291;
+		    line-height:30px;
+		}
     </style>
 </head>
 <!--
@@ -171,7 +186,18 @@ desired effect
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <ui-view>
-
+		<div class="ng-scope">
+			<div class="home-content content-center" style="padding-top: 8%;">
+				<div style="width:35%; margin-left: 5%; padding-right:1%">
+			        <h4>大数据自助分析平台</h4>
+			        <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;即时数据交互，不需要模型(Mondrian Schema, BO Universe)的“多维”数据图表设计Dashboard。拖拽维度交互，用户通过简单拖拽列的组合方式进行数据透视、聚合与展示。支持多种数据源，返回二维数组，自动生成相应交互界面。</h5>
+				</div>
+				
+			  	<div style="width:55%;margin-right: 5%; padding-left:1%">
+			    	<img src="dist/img/home_img.png" style="width:100%"">
+			  	</div>
+			</div>
+		</div>
         </ui-view>
         <!-- Content Header (Page header) -->
         <!--<section class="content-header">-->
