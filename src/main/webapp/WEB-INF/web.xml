@@ -54,6 +54,15 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>StatelessAuthcFilter</filter-name>
+        <filter-class>org.cboard.security.service.StatelessAuthcFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>StatelessAuthcFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>LocalSecurityFilter</filter-name>
         <filter-class>org.cboard.security.service.LocalSecurityFilter</filter-class>
     </filter>
