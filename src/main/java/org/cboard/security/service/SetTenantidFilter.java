@@ -26,8 +26,8 @@ import com.yonyou.iuap.log.utils.ThreadCallerIdGenerator;
  * @author wangFeng
  *
  */
-public class StatelessAuthcFilter implements Filter {
-	private static final Logger log = LoggerFactory.getLogger(StatelessAuthcFilter.class);
+public class SetTenantidFilter implements Filter {
+	private static final Logger log = LoggerFactory.getLogger(SetTenantidFilter.class);
 
 	protected void setTenantid(ServletRequest request, ServletResponse response) throws Exception {
 		HttpServletRequest hReq = (HttpServletRequest) request;
@@ -59,13 +59,6 @@ public class StatelessAuthcFilter implements Filter {
 			MDC.put("call_thread_id", call_thread_id);
 		}
 		MDC.put("current_tenant_id", InvocationInfoProxy.getTenantid());
-		this.initCustomMDC();
-	}
-
-	protected void initCustomMDC() {
-	}
-
-	protected void clearCustomMDC() {
 	}
 
 	@Override

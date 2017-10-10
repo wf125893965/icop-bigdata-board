@@ -2,23 +2,23 @@
 <div id="inner-container" class="content">
     <div class="row">
         <div class="col-md-3">
-            <div class="box box-solid">
+            <div class="box">
                 <div class="box-header with-border">
-                    <i class="glyphicon glyphicon-folder-open"></i> <h3 class="box-title"> {{'CONFIG.CATEGORY.CATEGORY'|translate}}</h3>
+                    <!-- <i class="glyphicon glyphicon-folder-open"> --> </i> <h3 class="box-title"> {{'CONFIG.CATEGORY.CATEGORY'|translate}}</h3>
                     <div class="box-tools pull-right">
-                        <i class="fa fa-plus toolbar-icon" ng-click="newBordCategory()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
+                        <i class="iconfont icon-add" ng-click="newBordCategory()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
                     </div>
                 </div>
                 <div class="box-body no-padding">
                     <div class="row">
                         <div class="col-md-12">
                             <ul class="nav nav-pills nav-stacked">
-                                <li ng-repeat="o in categoryList">
+                                <li ng-repeat="o in categoryList" ng-mouseover="x=true" ng-mouseleave="x=false" ng-click="editBordCategory(o)">
                                     <a>
                                         {{o.name}}
-                                        <span class="pull-right text-red">
-                                            <i class="fa fa-edit" style="cursor: pointer" ng-click="editBordCategory(o)" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
-                                            <i class="fa fa-trash-o" style="cursor: pointer" ng-click="deleteBordCategory(o)" title="{{'COMMON.DELETE'|translate}}"></i>
+                                        <span class="pull-right" ng-show="x" ng-init="x=false" style="color: #008EFE;">
+                                            <i class="iconfont icon-bianji1" style="cursor: pointer" ng-click="editBordCategory(o)" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
+                                            <i class="iconfont icon-shanchu text-red" style="cursor: pointer" ng-click="deleteBordCategory(o)" title="{{'COMMON.DELETE'|translate}}"></i>
                                         </span>
                                     </a>
                                 </li>
@@ -34,7 +34,7 @@
         </div>
         <div class="col-md-9"> 
 
-            <div class="box box-info" ng-show="optFlag == 'new' || optFlag == 'edit'">
+            <div class="box" ng-show="optFlag == 'new' || optFlag == 'edit'">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{curCategory.name}}</h3>
                 </div>

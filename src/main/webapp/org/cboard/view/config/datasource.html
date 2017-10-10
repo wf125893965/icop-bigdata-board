@@ -2,24 +2,24 @@
 <div id="inner-container" class="content">
     <div class="row">
         <div class="col-md-3">
-            <div class="box box-solid">
+            <div class="box">
                 <div class="box-header with-border">
-                    <i class="fa fa-database"></i> <h3 class="box-title"> {{'CONFIG.DATA_SOURCE.DATA_SOURCE_HEADER'|translate}}</h3>
+                    <!-- <i class="fa fa-database"></i> --> <h3 class="box-title" style="color: #33465A;"> {{'CONFIG.DATA_SOURCE.DATA_SOURCE_HEADER'|translate}}</h3>
                     <div class="box-tools pull-right">
-                        <i class="fa fa-plus toolbar-icon" ng-click="newDs()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
+                        <i class="iconfont icon-add" ng-click="newDs()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
                     </div>
                 </div>
                 <div class="box-body no-padding">
                     <div class="row">
                         <div class="col-md-12">
                             <ul class="nav nav-pills nav-stacked">
-                                <li ng-repeat="o in datasourceList">
+                                <li ng-repeat="o in datasourceList" ng-mouseover="x=true" ng-mouseleave="x=false" ng-click="editDs(o)">
                                     <a>
                                         {{o.name}}
-                                        <span class="pull-right text-red">
-                                            <i class="fa fa-copy" style="cursor: pointer" ng-click="copyDs(o)" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;
-                                            <i class="fa fa-edit" style="cursor: pointer" ng-click="editDs(o)" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
-                                            <i class="fa fa-trash-o" style="cursor: pointer" ng-click="deleteDs(o)" title="{{'COMMON.DELETE'|translate}}"></i>
+                                        <span class="pull-right ng-hide" ng-show="x" ng-init="x=false" style="color: #008EFE;">
+                                            <i class="iconfont icon-fuzhi" style="cursor: pointer" ng-click="copyDs(o)" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;
+                                            <i class="iconfont icon-bianji1" style="cursor: pointer" ng-click="editDs(o)" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
+                                            <i class="iconfont icon-shanchu text-red" style="cursor: pointer" ng-click="deleteDs(o)" title="{{'COMMON.DELETE'|translate}}"></i>
                                         </span>
                                     </a>
                                 </li>
@@ -28,8 +28,8 @@
                     </div>
                     </form>
                     <!-- /.box-body -->
-                    <div class="box-footer">
-                    </div>
+                    <!-- <div class="box-footer">
+                    </div> -->
                     <!-- /.box-footer-->
                 </div>
             </div>
@@ -39,15 +39,15 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">{{curDatasource.name}}</h3>
                 </div>
-                <div class="box-body">
+                <div class="box-body box-body-padding">
                     <div ng-show="optFlag == 'new'"
                          ng-include="'org/cboard/view/config/datasource/new.html'"></div>
                     <div ng-show="optFlag == 'edit'"
                          ng-include="'org/cboard/view/config/datasource/edit.html'"></div>
                 </div>
                 <!-- /.box-body -->
-                <div class="box-footer">
-                </div>
+                <!-- <div class="box-footer">
+                </div> -->
                 <!-- /.box-footer-->
             </div>
         </div>

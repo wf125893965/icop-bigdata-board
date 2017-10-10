@@ -54,12 +54,12 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>StatelessAuthcFilter</filter-name>
-        <filter-class>org.cboard.security.service.StatelessAuthcFilter</filter-class>
+        <filter-name>SetTenantidFilter</filter-name>
+        <filter-class>org.cboard.security.service.SetTenantidFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>StatelessAuthcFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <filter-name>SetTenantidFilter</filter-name>
+        <url-pattern>/dashboard/viewAggDataQuery.do</url-pattern>
     </filter-mapping>
 
     <filter>
