@@ -102,50 +102,45 @@ public class StatelessAuthcFilter implements Filter {
 
 		String token = CookieUtil.findCookieValue(cookies, "token");
 		String usercode = CookieUtil.findCookieValue(cookies, "u_usercode");
-		if (StringUtils.isEmpty(this.sysid)) {
-			throw new Exception(
-					"sysid is empty! add  sysid  parameter to \'StatelessAuthcFilter\' bean in application-shiro.xml");
-		} else {
-			username = request.getParameter("u_usercode");
-			if (username == null && StringUtils.isNotBlank(usercode)) {
-				username = usercode;
-			}
+		username = request.getParameter("u_usercode");
+		if (username == null && StringUtils.isNotBlank(usercode)) {
+			username = usercode;
+		}
 
-			boolean arg28 = !this.include(hReq);
-			if (!arg28) {
+		boolean arg28 = !this.include(hReq);
+		if (!arg28) {
+			return true;
+		} else if (token != null && username != null) {
+			ITokenProcessor tokenProcessor = this.tokenFactory.getTokenProcessor(token);
+			TokenParameter tp = tokenProcessor.getTokenParameterFromCookie(cookies);
+			try {
+				InvocationInfoProxy.setSysid(this.sysid);
+
+				InvocationInfoProxy.setUserid(username);
+				InvocationInfoProxy.setTenantid((String) tp.getExt().get("tenantid"));
+				InvocationInfoProxy.setToken(token);
+				this.initExtendParams(cookies);
+				this.initMDC();
+				this.afterValidate(hReq);
 				return true;
-			} else if (token != null && username != null) {
-				ITokenProcessor tokenProcessor = this.tokenFactory.getTokenProcessor(token);
-				TokenParameter tp = tokenProcessor.getTokenParameterFromCookie(cookies);
-				try {
-					InvocationInfoProxy.setSysid(this.sysid);
-
-					InvocationInfoProxy.setUserid(username);
-					InvocationInfoProxy.setTenantid((String) tp.getExt().get("tenantid"));
-					InvocationInfoProxy.setToken(token);
-					this.initExtendParams(cookies);
-					this.initMDC();
-					this.afterValidate(hReq);
-					return true;
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-					if (isAjax && e instanceof AuthenticationException) {
-						this.onAjaxAuthFail(request, response);
-						return false;
-					} else {
-						this.onLoginFail(request, response);
-						return false;
-					}
-				}
-			} else {
-				if (isAjax) {
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				if (isAjax && e instanceof AuthenticationException) {
 					this.onAjaxAuthFail(request, response);
+					return false;
 				} else {
 					this.onLoginFail(request, response);
+					return false;
 				}
-
-				return false;
 			}
+		} else {
+			if (isAjax) {
+				this.onAjaxAuthFail(request, response);
+			} else {
+				this.onLoginFail(request, response);
+			}
+
+			return false;
 		}
 	}
 
