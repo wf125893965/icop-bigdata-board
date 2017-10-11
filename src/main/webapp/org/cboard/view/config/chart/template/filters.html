@@ -17,8 +17,7 @@
                         ng-click="curWidget.config.filters.splice($index, 1);">
                     {{o.group}}
                 </button>
-                <button type="button" class="btn btn-default btn-sm" style="cursor: move;"
-                        ng-if="o.isMust">
+                <button type="button" class="btn btn-default btn-sm" style="cursor: move;" ng-if="o.isMust">
                     {{o.group}}
                 </button>
                 <button type="button" class="btn btn-warning btn-sm dropdown-toggle" ng-if="!isDsFilter(o)"
