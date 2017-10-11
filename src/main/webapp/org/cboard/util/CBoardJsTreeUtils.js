@@ -20,14 +20,19 @@ var jsTreeConfig1 = {
             }
             return true;  //allow all other operations
         },
-        worker : true
+        worker : true,
+        themes: {
+        	icons: true, //是否显示节点图标
+        	dots: false //是否显示节点关系连接线
+        }
     },
     types : {
         default : {
-            valid_children : ["default","file"]
+            valid_children : ["default","file"],
+            icon : 'fa fa-folder'
         },
         file : {
-            icon : 'glyphicon glyphicon-file'
+            icon : 'fa fa-file'
         }
     },
     dnd : {

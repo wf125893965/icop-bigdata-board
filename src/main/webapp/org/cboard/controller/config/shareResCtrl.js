@@ -119,13 +119,26 @@ cBoard.controller('shareResCtrl', function ($scope, $http, ModalUtils, $filter) 
                     error: function (error) {
                     },
                     check_callback: true,
-                    worker: true
+                    worker: true,
+                    themes: {
+                    	icons: true, //是否显示节点图标
+                    	dots: false //是否显示节点关系连接线
+                    }
                 },
                 checkbox: {
                     three_state: false
                 },
                 version: 1,
-                plugins: ['types', 'unique']
+                plugins: ['types', 'unique'],
+                types : {
+	                default : {
+	                    valid_children : ["default","file"],
+	                    icon : 'fa fa-folder'
+	                },
+	                file : {
+	                    icon : 'fa fa-file'
+	                }
+	            }
             };
             _.delay(function () {
                 $scope.treeInstance.jstree(true).open_all();

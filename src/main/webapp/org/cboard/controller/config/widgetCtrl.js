@@ -431,9 +431,21 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
                 }).data.filters;
                 if (fg) {
                     _.each(fg, function (e) {
+                    	e.isMust = false;
                         $scope.curWidget.filterGroups.push(e);
                     });
                 }
+                var mfg = _.find($scope.datasetList, function (ds) {
+                	return ds.id == $scope.curWidget.datasetId;
+                }).data.mustFilters;
+                if (mfg) {
+                	_.each(mfg, function (e) {
+                		var mustFilter = {group: e.mustGroup, filters: e.mustFilters, id: e.mustId, isMust: true};
+                		$scope.curWidget.config.filters.push(mustFilter);
+                		$scope.curWidget.filterGroups.push(mustFilter);
+                	});
+                }
+                console.log("=====", $scope.curWidget.filterGroups);
             }
         };
 
@@ -454,6 +466,8 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
         $scope.isDsFilter = function (o) {
             if ($scope.customDs) {
                 return false;
+            }else if (o.isMust) {
+            	return true;
             } else {
                 var fg = _.find($scope.datasetList, function (ds) {
                     return ds.id == $scope.curWidget.datasetId;
@@ -1387,6 +1401,69 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
                     };
                 }
             });
+        };
+        // 必须过滤
+        $scope.editMustFilterGroup = function (col) {
+        	var selects = schemaToSelect($scope.schema);
+        	$uibModal.open({
+        		templateUrl: 'org/cboard/view/config/modal/filterGroupMust.html',
+        		windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
+        		backdrop: false,
+        		scope: $scope,
+        		controller: function ($scope, $uibModalInstance) {
+        			if (col) {
+        				$scope.data = angular.copy(col);
+        			} else {
+        				$scope.data = {mustGroup: '', mustFilters: []};
+        			}
+        			$scope.selects = selects;
+        			$scope.close = function () {
+        				$uibModalInstance.close();
+        			};
+        			$scope.addColumn = function (str) {
+        				$scope.data.mustGilters.push({col: str, type: '=', values: []})
+        			};
+        			$scope.ok = function () {
+        				if (col) {
+        					col.mustGroup = $scope.data.mustGroup;
+        					col.mustFilters = $scope.data.mustFilters;
+        				} else {
+        					$scope.curWidget.msutFilterGroup.push($scope.data);
+        				}
+        				$uibModalInstance.close();
+        			};
+        			$scope.editFilter = function (filter) {
+        				$uibModal.open({
+        					templateUrl: 'org/cboard/view/dashboard/modal/param.html',
+        					windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
+        					backdrop: false,
+        					size: 'lg',
+        					resolve: {
+        						param: function () {
+        							return angular.copy(filter);
+        						},
+        						filter: function () {
+        							return false;
+        						},
+        						getSelects: function () {
+        							return function (byFilter, column, callback) {
+        								dataService.getDimensionValues($scope.datasource ? $scope.datasource.id : null, $scope.curWidget.query, $scope.curWidget.datasetId, column, undefined, function (filtered) {
+        									callback(filtered);
+        								});
+        							};
+        						},
+        						ok: function () {
+        							return function (param) {
+        								filter.type = param.type;
+        								filter.values = param.values;
+        							}
+        						}
+        					},
+        					controller: 'paramSelector'
+        				});
+        			};
+        		}
+        	});
         };
 
         $scope.editSort = function (o) {

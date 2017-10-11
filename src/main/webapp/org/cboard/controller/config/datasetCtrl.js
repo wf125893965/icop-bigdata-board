@@ -242,8 +242,12 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
 
     };
 
+    // 可选过滤
     $scope.editFilterGroup = function (col) {
         var selects = schemaToSelect($scope.curDataset.data.schema);
+        if(!$scope.filterId){
+        	$scope.filterId = uuid4.generate();
+        }
         $uibModal.open({
             templateUrl: 'org/cboard/view/config/modal/filterGroup.html',
             windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
@@ -253,7 +257,7 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
                 if (col) {
                     $scope.data = angular.copy(col);
                 } else {
-                    $scope.data = {group: '', filters: [], id: uuid4.generate()};
+                    $scope.data = {group: '', filters: [], id: $scope.filterId};
                 }
                 $scope.selects = selects;
                 $scope.close = function () {
@@ -307,6 +311,76 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
             }
         });
     };
+    
+    // 必选过滤
+    $scope.editMustFilterGroup = function (col) {
+    	var selects = schemaToSelect($scope.curDataset.data.schema);
+    	if(!$scope.filterId){
+        	$scope.filterId = uuid4.generate();
+        }
+    	$uibModal.open({
+    		templateUrl: 'org/cboard/view/config/modal/filterGroupMust.html',
+    		windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
+    		backdrop: false,
+    		scope: $scope,
+    		controller: function ($scope, $uibModalInstance) {
+    			if (col) {
+    				$scope.data = angular.copy(col);
+    			} else {
+    				$scope.data = {mustGroup: '', mustFilters: [], mustId: $scope.filterId};
+    			}
+    			$scope.selects = selects;
+    			$scope.close = function () {
+    				$uibModalInstance.close();
+    			};
+    			$scope.addColumn = function (str) {
+    				$scope.data.mustFilters.push({col: str, type: '=', values: []})
+    			};
+    			$scope.ok = function () {
+    				if (col) {
+    					col.mustGroup = $scope.data.mustGroup;
+    					col.mustFilters = $scope.data.mustFilters;
+    				} else {
+    					if ($scope.$parent.curDataset.data.mustFilters == null) {
+    						$scope.$parent.curDataset.data.mustFilters = [];
+    					}
+    					$scope.$parent.curDataset.data.mustFilters.push($scope.data);
+    				}
+    				$uibModalInstance.close();
+    			};
+    			$scope.editFilter = function (filter) {
+    				$uibModal.open({
+    					templateUrl: 'org/cboard/view/dashboard/modal/param.html',
+    					windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
+    					backdrop: false,
+    					size: 'lg',
+    					resolve: {
+    						param: function () {
+    							return angular.copy(filter);
+    						},
+    						filter: function () {
+    							return false;
+    						},
+    						getSelects: function () {
+    							return function (byFilter, column, callback) {
+    								dataService.getDimensionValues($scope.datasource.id, $scope.curWidget.query, undefined, column, undefined, function (filtered) {
+    									callback(filtered);
+    								});
+    							};
+    						},
+    						ok: function () {
+    							return function (param) {
+    								filter.type = param.type;
+    								filter.values = param.values;
+    							}
+    						}
+    					},
+    					controller: 'paramSelector'
+    				});
+    			};
+    		}
+    	});
+    };
 
     $scope.deleteFilterGroup = function (index) {
         ModalUtils.confirm(translate("COMMON.FILTER_GROUP") + ": [" + $scope.curDataset.data.filters[index].group + "], " +
@@ -315,6 +389,15 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
                 $scope.curDataset.data.filters.splice(index, 1)
             }
         );
+    };
+    // 删除必选过滤
+    $scope.deleteMustFilterGroup = function (index) {
+    	ModalUtils.confirm(translate("COMMON.FILTER_GROUP") + ": [" + $scope.curDataset.data.mustFilters[index].mustGroup + "], " +
+    			translate("COMMON.CONFIRM_DELETE"), "modal-warning", "lg",
+    			function () {
+    		$scope.curDataset.data.mustFilters.splice(index, 1)
+    	}
+    	);
     };
 
     var schemaToSelect = function (schema) {
