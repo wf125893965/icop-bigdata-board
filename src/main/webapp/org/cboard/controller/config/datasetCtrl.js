@@ -245,9 +245,6 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
     // 可选过滤
     $scope.editFilterGroup = function (col) {
         var selects = schemaToSelect($scope.curDataset.data.schema);
-        if(!$scope.filterId){
-        	$scope.filterId = uuid4.generate();
-        }
         $uibModal.open({
             templateUrl: 'org/cboard/view/config/modal/filterGroup.html',
             windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
@@ -257,7 +254,7 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
                 if (col) {
                     $scope.data = angular.copy(col);
                 } else {
-                    $scope.data = {group: '', filters: [], id: $scope.filterId};
+                    $scope.data = {group: '', filters: [], id: uuid4.generate()};
                 }
                 $scope.selects = selects;
                 $scope.close = function () {
@@ -315,9 +312,6 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
     // 必选过滤
     $scope.editMustFilterGroup = function (col) {
     	var selects = schemaToSelect($scope.curDataset.data.schema);
-    	if(!$scope.filterId){
-        	$scope.filterId = uuid4.generate();
-        }
     	$uibModal.open({
     		templateUrl: 'org/cboard/view/config/modal/filterGroupMust.html',
     		windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
@@ -327,7 +321,7 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
     			if (col) {
     				$scope.data = angular.copy(col);
     			} else {
-    				$scope.data = {mustGroup: '', mustFilters: [], mustId: $scope.filterId};
+    				$scope.data = {mustGroup: '', mustFilters: [], mustId: uuid4.generate()};
     			}
     			$scope.selects = selects;
     			$scope.close = function () {
