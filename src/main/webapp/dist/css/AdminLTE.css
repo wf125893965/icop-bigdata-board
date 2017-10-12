@@ -1372,6 +1372,9 @@ li.item.ng-scope {
   color: #bbb;
   opacity: 1;
 }
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    background-color: #F9FBFD;
+}
 .form-control:not(select) {
   -webkit-appearance: none;
   -moz-appearance: none;
