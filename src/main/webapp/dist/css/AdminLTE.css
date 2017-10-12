@@ -10,6 +10,13 @@
  * Core: General Layout Style
  * -------------------------
  */
+ 
+div::-webkit-scrollbar{width:8px; height:8px;}
+div::-webkit-scrollbar-track{background-color:#F9FBFD; border-radius: 10px;}
+div::-webkit-scrollbar-thumb{background-color:#E6E9EF; border-radius: 10px;}
+div::-webkit-scrollbar-thumb:hover {background-color:#E6E9EF; border-radius: 10px;}
+div::-webkit-scrollbar-thumb:active {background-color:#c0c0c0; border-radius: 10px;}
+
 html,
 body {
   min-height: 100%;

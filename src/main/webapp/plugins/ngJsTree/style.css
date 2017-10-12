@@ -388,10 +388,10 @@
   /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='@color1', endColorstr='@color2',GradientType=0 );*/
 }
 .jstree-default .jstree-node {
-  min-height: 24px;
-  line-height: 24px;
-  margin-left: 24px;
-  min-width: 24px;
+  min-height: 30px;
+  line-height: 30px;
+  margin-left: 30px;
+  min-width: 30px;
 }
 .jstree-default .jstree-anchor {
   line-height: 24px;
