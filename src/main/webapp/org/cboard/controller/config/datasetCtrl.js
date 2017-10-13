@@ -321,7 +321,7 @@ cBoard.controller('datasetCtrl', function ($scope, $http, dataService, $uibModal
     			if (col) {
     				$scope.data = angular.copy(col);
     			} else {
-    				$scope.data = {mustGroup: '', mustFilters: [], mustId: uuid4.generate()};
+    				$scope.data = {mustGroup: '', mustFilters: [], id: uuid4.generate()};
     			}
     			$scope.selects = selects;
     			$scope.close = function () {

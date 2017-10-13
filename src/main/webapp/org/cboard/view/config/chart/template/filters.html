@@ -13,11 +13,11 @@
              dnd-moved="curWidget.config.filters.splice($index, 1)" dnd-type="o.group?'filterGroup':'filter'"
              class="btn-group" style="cursor: move;margin: 3px 3px;">
             <div ng-if="o.group" class="btn-group">
-                <button type="button" class="btn btn-warning btn-sm" style="cursor: move;" ng-if="!o.isMust"
+                <button type="button" class="btn btn-warning btn-sm" style="cursor: move;" ng-if="!o.must"
                         ng-click="curWidget.config.filters.splice($index, 1);">
                     {{o.group}}
                 </button>
-                <button type="button" class="btn btn-default btn-sm" style="cursor: move;" ng-if="o.isMust">
+                <button type="button" class="btn btn-default btn-sm" style="cursor: move;" ng-if="o.must">
                     {{o.group}}
                 </button>
                 <button type="button" class="btn btn-warning btn-sm dropdown-toggle" ng-if="!isDsFilter(o)"

@@ -55,7 +55,7 @@
             <span><img src="imgs/schema/filter.png"/><b>{{'CONFIG.DATASET.FILTER'|translate}}</b></span>
             <i class="glyphicon glyphicon-plus" ng-click="editFilterGroup()"></i>
             <ul>
-                <li ng-repeat="o in curWidget.filterGroups|filter:filterFilterGroup|filter:{'isMust':false} ">
+                <li ng-repeat="o in curWidget.filterGroups|filter:filterFilterGroup|filter:{'must':false} ">
                     <span dnd-draggable="o" dnd-type="'filterGroup'"><img src="imgs/schema/bullet_green.png">{{o.group}}</span>
                     <i class="fa fa-edit" ng-click="editFilterGroup(o)" ng-if="!isDsFilter(o)"></i>
                     <i class="fa fa-trash-o"  ng-click="curWidget.filterGroups.splice($index, 1)" ng-if="!isDsFilter(o)"></i>

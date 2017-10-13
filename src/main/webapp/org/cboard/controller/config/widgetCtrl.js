@@ -431,30 +431,62 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
                 }).data.filters;
                 if (fg) {
                     _.each(fg, function (e) {
-                    	e.isMust = false;
+                    	e.must = false;
                         $scope.curWidget.filterGroups.push(e);
                     });
                 }
-                var mfg = _.find($scope.datasetList, function (ds) {
+                
+                /**
+                 * 下面是必选过滤逻辑
+                 * */
+                // dsfg：数据集中的必选条件
+                var dsfg = _.find($scope.datasetList, function (ds) {
                 	return ds.id == $scope.curWidget.datasetId;
                 }).data.mustFilters;
                 
-                var mustIds = [];
-                _.each($scope.curWidget.config.filters, function(e){
-                	mustIds.push(e.id);
-                });
-                if (mfg) {
-                	_.each(mfg, function (e) {
-                		var mustFilter = {group: e.mustGroup, filters: e.mustFilters, id: e.mustId, isMust: true};
-                		if($scope.arrayIndexOf(mustIds, e.mustId) == -1){
-                			$scope.curWidget.config.filters.push(mustFilter);
+                // 数据集中必选条件ID
+                var dsmfIds = [];
+                
+                // 当前图表中的所有过滤条件
+                var curFilters = $scope.curWidget.config.filters;
+                // 当前图表必选过滤条件ID
+                var curFiltersMustIds = [];
+                if (curFilters) {
+                	_.each(curFilters, function (e) {
+                		if(e.must){
+                			curFiltersMustIds.push(e.id);
                 		}
-                		
-                		$scope.curWidget.filterGroups.push(mustFilter);
                 	});
                 }
-                /*console.log("=====", $scope.curWidget.filterGroups);
-                console.log("===== mustFilter", $scope.curWidget.config.filters);*/
+                
+                // 是否重新保存当前图表过滤条件标志
+            	var reSaveFlag = false;
+                
+                // 如果数据集中的必选条件不在当前图表过滤条件中，将数据集中的必选条件加入到当前图表过滤条件中
+                if (dsfg) {
+                	_.each(dsfg, function (e) {
+                		if($scope.arrayIndexOf(curFiltersMustIds, e.id) == -1){
+                			reSaveFlag = true;
+                			var mustFilter = {group: e.mustGroup, filters: e.mustFilters, id: e.id, must: true};
+                			curFilters.push(mustFilter);
+                			$scope.curWidget.filterGroups.push(mustFilter);
+                		}
+                		dsmfIds.push(e.id);
+                	});
+                }
+                // 如果当前图表的必选过滤条件不在数据集的必选条件中，删除
+                if(curFilters){
+            		for (var i = 0; i < curFilters.length; i++) {  
+            			if( $scope.arrayIndexOf(dsmfIds, curFilters[i].id) == -1 && curFilters[i].must){
+            				curFilters.splice(i--,1);
+            				reSaveFlag = true;
+            			}
+                    }
+                }
+        		// 重新保存当前图表的过滤条件
+        		if(reSaveFlag){
+        			$scope.saveWgt('alert');
+        		}
             }
         };
         
@@ -484,7 +516,7 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
         $scope.isDsFilter = function (o) {
             if ($scope.customDs) {
                 return false;
-            }else if (o.isMust) {
+            }else if (o.must) {
             	return true;
             } else {
                 var fg = _.find($scope.datasetList, function (ds) {
@@ -966,7 +998,7 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
             }
         };
 
-        $scope.saveWgt = function () {
+        $scope.saveWgt = function (alertFlag) {
             if (!validation()) {
                 return;
             }
@@ -1026,9 +1058,13 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
                     if (serviceStatus.status == '1') {
                         getWidgetList();
                         getCategoryList();
-                        ModalUtils.alert(translate("COMMON.SUCCESS"), "modal-success", "sm");
+                        if(!alertFlag){
+                        	ModalUtils.alert(translate("COMMON.SUCCESS"), "modal-success", "sm");
+                        }
                     } else {
-                        $scope.alerts = [{msg: serviceStatus.msg, type: 'danger'}];
+                    	if(!alertFlag){
+                    		$scope.alerts = [{msg: serviceStatus.msg, type: 'danger'}];
+                    	}
                     }
                 });
             }
@@ -1369,7 +1405,7 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
                     if (col) {
                         $scope.data = angular.copy(col);
                     } else {
-                        $scope.data = {group: '', filters: [], isMust: false};
+                        $scope.data = {group: '', filters: [], must: false};
                     }
                     $scope.selects = selects;
                     $scope.close = function () {
