@@ -2405,6 +2405,7 @@ label {
 .btn-primary:active,
 .btn-primary.hover {
   background-color: #4AA6FC;
+  border-color: #4AA6FC;
 }
 .btn-success {
   background-color: #3995F8;
@@ -2414,6 +2415,7 @@ label {
 .btn-success:active,
 .btn-success.hover {
   background-color: #3995F8;
+  border-color: #3995F8;
 }
 .btn-info {
   background-color: #00c0ef;
@@ -2423,6 +2425,7 @@ label {
 .btn-info:active,
 .btn-info.hover {
   background-color: #00acd6;
+  border-color: #00acd6;
 }
 .btn-danger {
   background-color: #ff7e39;
@@ -2432,15 +2435,17 @@ label {
 .btn-danger:active,
 .btn-danger.hover {
   background-color: #ff7e39;
+  border-color: #ff7e39;
 }
 .btn-warning {
   background-color: #f39c12;
-  border-color: #e08e0b;
+  border-color: #f39c12;
 }
 .btn-warning:hover,
 .btn-warning:active,
 .btn-warning.hover {
-  background-color: #e08e0b;
+  background-color: #f39c12;
+  border-color: #f39c12;
 }
 .btn-outline {
   color: #fff;
@@ -2686,7 +2691,7 @@ button.pull-left:hover{
   border-color: transparent;
 }
 .nav-tabs-custom > .nav-tabs > li.active {
-  border-top-color: #3c8dbc;
+  border-top-color: #3995F8;
 }
 .nav-tabs-custom > .nav-tabs > li.active > a,
 .nav-tabs-custom > .nav-tabs > li.active:hover > a {
@@ -3151,8 +3156,14 @@ table.text-center th {
 .modal {
   background: rgba(0, 0, 0, 0.3);
 }
+.modal-sm {
+    width: 375px;
+}
+.modal-lg {
+    width: 600px;
+}
 .modal-content {
-  border-radius: 0;
+  border-radius: 8px;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
   border: 0;
@@ -3164,7 +3175,6 @@ table.text-center th {
   }
 }
 .modal-footer {
-
   border-top: none;
 }
 .modal-body>p {
@@ -3172,39 +3182,39 @@ table.text-center th {
   margin-left: 10px;
   word-wrap: break-word;
 }
-.modal-primary .modal-footer .btn-outline {
-  background: #307095;
+/* .modal-primary .modal-footer .btn-outline {
+  background: #3995F8;
 }
 .modal-warning .modal-footer .btn-outline {
-  background: #c87f0a;
+  background: #ff7e39;
 }
 .modal-info .modal-footer .btn-outline {
-  background: #0097bc;
+  background: #3995F8;
 }
 .modal-success .modal-footer .btn-outline {
-  background: #00a65a;
+  background: #3995F8;
 }
 .modal-danger .modal-footer .btn-outline {
-  background: #c23321;
-}
+  background: #ff7e39;
+} */
 .modal-primary .modal-header {
-  border-top: 4px solid #307095;
+  /* border-top: 4px solid #307095; */
   border-bottom: none;
 }
 .modal-warning .modal-header {
-  border-top: 4px solid #c87f0a;
+  /* border-top: 4px solid #c87f0a; */
   border-bottom: none;
 }
 .modal-info .modal-header {
-  border-top: 4px solid #0097bc;
+  /* border-top: 4px solid #0097bc; */
   border-bottom: none;
 }
 .modal-success .modal-header {
-  border-top: 4px solid #00a65a;
+  /* border-top: 4px solid #00a65a; */
   border-bottom: none;
 }
 .modal-danger .modal-header {
-  border-top: 4px solid #c23321;
+  /* border-top: 4px solid #c23321; */
   border-bottom: none;
 }
 /*
