@@ -438,65 +438,43 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
                 
                 /**
                  * 下面是必选过滤逻辑
-                 * */
+                 * */                
+                // 是否重新保存当前图表过滤条件标志
+            	var reSaveFlag = false;
+                
+                // 删除当前图表过滤条件中的所有必选过滤
+                var curFilters = $scope.curWidget.config.filters;
+                var len = curFilters.length;
+                if (curFilters) {
+                	for (var i = 0; i < len; i++) {  
+            			if(curFilters[i].must){
+            				reSaveFlag = true;
+            				curFilters.splice(i--,1);
+            				len -= 1;
+            			}
+                    }
+                }
+                
                 // dsfg：数据集中的必选条件
                 var dsfg = _.find($scope.datasetList, function (ds) {
                 	return ds.id == $scope.curWidget.datasetId;
                 }).data.mustFilters;
                 
-                // 数据集中必选条件ID
-                var dsmfIds = [];
-                
-                // 当前图表中的所有过滤条件
-                var curFilters = $scope.curWidget.config.filters;
-                // 当前图表必选过滤条件ID
-                var curFiltersMustIds = [];
-                if (curFilters) {
-                	_.each(curFilters, function (e) {
-                		if(e.must){
-                			curFiltersMustIds.push(e.id);
-                		}
-                	});
-                }
-                
-                // 是否重新保存当前图表过滤条件标志
-            	var reSaveFlag = false;
-                
-                // 如果数据集中的必选条件不在当前图表过滤条件中，将数据集中的必选条件加入到当前图表过滤条件中
+                // 将数据集中所有必选条件加入到当前图表过滤条件中
                 if (dsfg) {
-                	_.each(dsfg, function (e) {
-                		if($scope.arrayIndexOf(curFiltersMustIds, e.id) == -1){
-                			reSaveFlag = true;
-                			var mustFilter = {group: e.mustGroup, filters: e.mustFilters, id: e.id, must: true};
-                			curFilters.push(mustFilter);
-                			$scope.curWidget.filterGroups.push(mustFilter);
-                		}
-                		dsmfIds.push(e.id);
-                	});
-                }
-                // 如果当前图表的必选过滤条件不在数据集的必选条件中，删除
-                if(curFilters){
-            		for (var i = 0; i < curFilters.length; i++) {  
-            			if( $scope.arrayIndexOf(dsmfIds, curFilters[i].id) == -1 && curFilters[i].must){
-            				curFilters.splice(i--,1);
-            				reSaveFlag = true;
-            			}
+                	for (var i = 0; i < dsfg.length; i++) {  
+                		reSaveFlag = true;
+            			var mustFilter = {group: dsfg[i].mustGroup, filters: dsfg[i].mustFilters, id: dsfg[i].id, must: true};
+            			curFilters.splice(i, 0, mustFilter);
+            			$scope.curWidget.filterGroups.push(mustFilter);
                     }
                 }
+                
         		// 重新保存当前图表的过滤条件
         		if(reSaveFlag){
         			$scope.saveWgt('alert');
         		}
             }
-        };
-        
-        $scope.arrayIndexOf = function(arr, e){
-        	 for (var i = 0; i < arr.length; i++) {  
-                 if (arr[i] == e) {  
-                     return i;  
-                 }  
-             }  
-             return -1;
         };
         
         $scope.isDsExpression = function (o) {
