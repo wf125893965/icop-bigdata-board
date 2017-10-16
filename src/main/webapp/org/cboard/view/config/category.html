@@ -6,7 +6,7 @@
                 <div class="box-header with-border">
                     <!-- <i class="glyphicon glyphicon-folder-open"> --> </i> <h3 class="box-title"> {{'CONFIG.CATEGORY.CATEGORY'|translate}}</h3>
                     <div class="box-tools pull-right">
-                        <i class="iconfont icon-add" ng-click="newBordCategory()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
+                        <i class="iconfont icon-add toolbar-icon" ng-click="newBordCategory()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
                     </div>
                 </div>
                 <div class="box-body no-padding">
@@ -17,8 +17,8 @@
                                     <a>
                                         {{o.name}}
                                         <span class="pull-right" ng-show="x" ng-init="x=false" style="color: #008EFE;">
-                                            <i class="iconfont icon-bianji1" style="cursor: pointer" ng-click="editBordCategory(o)" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
-                                            <i class="iconfont icon-shanchu text-red" style="cursor: pointer" ng-click="deleteBordCategory(o)" title="{{'COMMON.DELETE'|translate}}"></i>
+                                            <i class="iconfont icon-bianji1 toolbar-icon" style="cursor: pointer" ng-click="editBordCategory(o)" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
+                                            <i class="iconfont icon-shanchu toolbar-icon text-red" style="cursor: pointer" ng-click="deleteBordCategory(o)" title="{{'COMMON.DELETE'|translate}}"></i>
                                         </span>
                                     </a>
                                 </li>
