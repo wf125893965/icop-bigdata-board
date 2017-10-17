@@ -16,6 +16,12 @@ div::-webkit-scrollbar-track{background-color:#F9FBFD; border-radius: 10px;}
 div::-webkit-scrollbar-thumb{background-color:#E6E9EF; border-radius: 10px;}
 div::-webkit-scrollbar-thumb:hover {background-color:#E6E9EF; border-radius: 10px;}
 div::-webkit-scrollbar-thumb:active {background-color:#c0c0c0; border-radius: 10px;}
+ 
+select::-webkit-scrollbar{width:8px; height:8px;}
+select::-webkit-scrollbar-track{background-color:#F9FBFD; border-radius: 10px;}
+select::-webkit-scrollbar-thumb{background-color:#E6E9EF; border-radius: 10px;}
+select::-webkit-scrollbar-thumb:hover {background-color:#E6E9EF; border-radius: 10px;}
+select::-webkit-scrollbar-thumb:active {background-color:#c0c0c0; border-radius: 10px;}
 
 html,
 body {
@@ -1419,8 +1425,7 @@ li.item.ng-scope {
 }
 /* Input group */
 .input-group .input-group-addon {
-  border-radius: 0;
-  border-color: #d2d6de;
+  border: 1px solid #E6E9EF;
   background-color: #fff;
 }
 /* button groups */
@@ -3159,8 +3164,11 @@ table.text-center th {
 .modal-sm {
     width: 375px;
 }
+.modal-md {
+    width: 768px;
+}
 .modal-lg {
-    width: 600px;
+    width: 900px;
 }
 .modal-content {
   border-radius: 8px;
@@ -3173,9 +3181,6 @@ table.text-center th {
     -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
   }
-}
-.modal-footer {
-  border-top: none;
 }
 .modal-body>p {
   font-size: 15px;
@@ -3198,23 +3203,24 @@ table.text-center th {
   background: #ff7e39;
 } */
 .modal-primary .modal-header {
-  /* border-top: 4px solid #307095; */
   border-bottom: none;
 }
 .modal-warning .modal-header {
-  /* border-top: 4px solid #c87f0a; */
   border-bottom: none;
 }
+.modal-warning .modal-footer {
+  border-top: none;
+}
 .modal-info .modal-header {
-  /* border-top: 4px solid #0097bc; */
   border-bottom: none;
 }
 .modal-success .modal-header {
-  /* border-top: 4px solid #00a65a; */
   border-bottom: none;
 }
+.modal-success .modal-footer {
+  border-top: none;
+}
 .modal-danger .modal-header {
-  /* border-top: 4px solid #c23321; */
   border-bottom: none;
 }
 /*
@@ -5128,4 +5134,23 @@ button >canvas {
     float: left;
     width: 33.3333333%;
   }
+}
+
+ .border-left-radius {
+   border-top-left-radius: 4px !important; 
+   border-bottom-left-radius: 4px !important;
+ }
+ .border-right-radius {
+   border-top-right-radius: 4px !important;
+   border-bottom-right-radius: 4px !important;
+ }
+ div.cubeTree, div.cubeSelected {
+    border: 1px solid #E6E9EF;
+    border-radius: 4px;
+}
+.no-left-border {
+  border-left-width: 0px !important;
+}
+.no-right-border {
+  border-right-width: 0px !important;
 }
