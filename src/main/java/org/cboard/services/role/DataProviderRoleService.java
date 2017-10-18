@@ -32,9 +32,12 @@ public class DataProviderRoleService {
     @Value("${admin_user_id}")
     private String adminUserId;
 
-    @Around("execution(* org.cboard.services.DataProviderService.getDimensionValues(..)) ||" +
+    /*@Around("execution(* org.cboard.services.DataProviderService.getDimensionValues(..)) ||" +
             "execution(* org.cboard.services.DataProviderService.getColumns(..)) ||" +
             "execution(* org.cboard.services.DataProviderService.queryAggData(..)) ||" +
+            "execution(* org.cboard.services.DataProviderService.viewAggDataQuery(..))")*/
+    @Around("execution(* org.cboard.services.DataProviderService.getDimensionValues(..)) ||" +
+            "execution(* org.cboard.services.DataProviderService.getColumns(..)) ||"  +
             "execution(* org.cboard.services.DataProviderService.viewAggDataQuery(..))")
     public Object query(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Long datasourceId = (Long) proceedingJoinPoint.getArgs()[0];
