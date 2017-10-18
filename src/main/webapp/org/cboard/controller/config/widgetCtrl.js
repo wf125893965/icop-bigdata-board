@@ -1286,7 +1286,7 @@ cBoard.controller('widgetCtrl', function ($scope, $stateParams, $http, $uibModal
                 templateUrl: 'org/cboard/view/dashboard/modal/param.html',
                 windowTemplateUrl: 'org/cboard/view/util/modal/window.html',
                 backdrop: false,
-                size: 'lg',
+                size: 'md',
                 resolve: {
                     param: function () {
                         var item = setbackArr[setbackIdx];

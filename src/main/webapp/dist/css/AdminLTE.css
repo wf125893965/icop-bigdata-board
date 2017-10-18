@@ -3187,38 +3187,32 @@ table.text-center th {
   margin-left: 10px;
   word-wrap: break-word;
 }
-/* .modal-primary .modal-footer .btn-outline {
-  background: #3995F8;
+.modal-primary .modal-footer {
+  border-top: none;
 }
-.modal-warning .modal-footer .btn-outline {
-  background: #ff7e39;
+.modal-warning .modal-footer {
+  border-top: none;
 }
-.modal-info .modal-footer .btn-outline {
-  background: #3995F8;
+.modal-info .modal-footer {
+  border-top: none;
 }
-.modal-success .modal-footer .btn-outline {
-  background: #3995F8;
+.modal-success .modal-footer {
+  border-top: none;
 }
-.modal-danger .modal-footer .btn-outline {
-  background: #ff7e39;
-} */
+.modal-danger .modal-footer {
+  border-top: none;
+} 
 .modal-primary .modal-header {
   border-bottom: none;
 }
 .modal-warning .modal-header {
   border-bottom: none;
 }
-.modal-warning .modal-footer {
-  border-top: none;
-}
 .modal-info .modal-header {
   border-bottom: none;
 }
 .modal-success .modal-header {
   border-bottom: none;
-}
-.modal-success .modal-footer {
-  border-top: none;
 }
 .modal-danger .modal-header {
   border-bottom: none;
