@@ -175,7 +175,7 @@ public class BoardService {
 			function.setDivClass(divClass);
 			String frontProjectName = request.getContextPath();
 			function.setFrontProjectname(frontProjectName.substring(1, frontProjectName.length()));
-			function.setListUrl("dashboard/getQueryData.do?id=" + id);
+			function.setListUrl("dashboard/viewBoard.do?id=" + id);
 			function.setModify(false);
 			functions.add(function);
 			functionDubboService.saveOrUpdate(functions);
