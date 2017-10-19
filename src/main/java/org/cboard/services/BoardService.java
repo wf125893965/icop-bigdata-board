@@ -175,11 +175,7 @@ public class BoardService {
 			function.setDivClass(divClass);
 			String frontProjectName = request.getContextPath();
 			function.setFrontProjectname(frontProjectName.substring(1, frontProjectName.length()));
-
-			String phantomUrl = persistService.getPhantomUrl(id, userId);
-			// http://localhost:8180/cboard/render.html?sid=d9e0ba53c2594c459e113e7bb29c877b#?id=4&pid=1f08fe42cf08431f8412755e609f75fb
-			String[] url = phantomUrl.split("render\\.html");
-			function.setListUrl("render.html" + url[url.length - 1]);
+			function.setListUrl("dashboard/getQueryData.do?id=" + id);
 			function.setModify(false);
 			functions.add(function);
 			functionDubboService.saveOrUpdate(functions);

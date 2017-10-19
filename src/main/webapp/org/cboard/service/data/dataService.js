@@ -138,11 +138,22 @@ cBoard.service('dataService', function ($http, $q, updateService) {
             var dataSeries = getDataSeries(chartConfig);
             var cfg = {rows: [], columns: [], filters: []};
             cfg.rows = getDimensionConfig(chartConfig.keys);
+            console.log("rows = chartConfig.keys", chartConfig.keys);
+            
             cfg.columns = getDimensionConfig(chartConfig.groups);
+            console.log("columns = chartConfig.groups", chartConfig.groups);
+            
             cfg.filters = getDimensionConfig(chartConfig.filters);
+            console.log("filters = chartConfig.filters", chartConfig.filters);
+            
             cfg.filters = cfg.filters.concat(getDimensionConfig(chartConfig.boardFilters));
+            console.log("filters = chartConfig.boardFilters", chartConfig.boardFilters);
+            
             cfg.filters = cfg.filters.concat(getDimensionConfig(chartConfig.boardWidgetFilters));
+            console.log("filters = chartConfig.boardFilters", chartConfig.boardWidgetFilters);
+            
             cfg.values = _.map(dataSeries, function (s) {
+                console.log("values = dataSeries", dataSeries);
                 return {column: s.name, aggType: s.aggregate};
             });
             $http.post("dashboard/getAggregateData.do", {

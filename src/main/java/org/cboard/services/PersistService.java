@@ -54,17 +54,19 @@ public class PersistService {
 			String os = SystemUtil.getOsName();
 			String phantomjsPath = null;
 			if (os != null && os.toLowerCase().indexOf("linux") > -1) {
-				File f = new File(this.getClass().getResource("/phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs").getFile());
-				if(f.exists()){
+				File f = new File(
+						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs").getFile());
+				if (f.exists()) {
 					LOG.info("Is Execute allow : {}", f.canExecute());
 					phantomjsPath = f.getPath();
 				}
-				if(!f.canExecute()){
+				if (!f.canExecute()) {
 					f.setExecutable(true);
 				}
 			} else if (os != null && os.toLowerCase().startsWith("win")) {
 				phantomjsPath = new File(
-						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile()).getPath();
+						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile())
+								.getPath();
 			}
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
 			LOG.info("Run phantomjs command: {}", cmd);
@@ -93,7 +95,7 @@ public class PersistService {
 		PersistContext context = new PersistContext(dashboardId);
 		TASK_MAP.put(persistId, context);
 		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-		LocalSecurityFilter.put(uuid, userId);
+		// LocalSecurityFilter.put(uuid, userId);
 		String phantomUrl = new StringBuffer(request.getScheme() + "://").append(request.getServerName() + ":")
 				.append(web).append("render.html").append("?sid=").append(uuid).append("#?id=").append(dashboardId)
 				.append("&pid=").append(persistId).toString();

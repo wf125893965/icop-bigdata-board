@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.cboard.dao.BoardDao;
 import org.cboard.dao.CategoryDao;
@@ -41,6 +39,7 @@ import org.cboard.services.DataProviderService;
 import org.cboard.services.DatasetService;
 import org.cboard.services.DatasourceService;
 import org.cboard.services.PersistService;
+import org.cboard.services.QueryDataService;
 import org.cboard.services.ServiceStatus;
 import org.cboard.services.WidgetService;
 import org.cboard.services.job.JobService;
@@ -56,6 +55,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -117,6 +117,9 @@ public class DashboardController {
 
 	@Autowired
 	private PersistService persistService;
+
+	@Autowired
+	private QueryDataService queryDataService;
 
 	@RequestMapping(value = "/test")
 	public ServiceStatus test(@RequestParam(name = "datasource", required = false) String datasource,
@@ -374,99 +377,9 @@ public class DashboardController {
 	}
 
 	@RequestMapping(value = "/getQueryData")
-	public AggregateResult getQueryData(@RequestBody Map<String, Object> params) {
-		Long widgetId = Long.valueOf(String.valueOf(params.get("widgetId")));
-		DashboardWidget widget = widgetDao.getWidget(widgetId);
-
-		JSONObject data = JSONObject.parseObject(widget.getData());
-
-		String str1 = String.valueOf(data.get("datasourceId"));
-		Long datasourceId = NumberUtils.isNumber(str1) ? Long.valueOf(str1) : null;
-
-		String str3 = String.valueOf(data.get("query"));
-		String query = "null".equals(str3) || StringUtils.isEmpty(str3) ? null : str3;
-
-		String str2 = String.valueOf(data.get("datasetId"));
-		Long datasetId = NumberUtils.isNumber(str2) ? Long.valueOf(str2) : null;
-
-		Boolean reload = false;
-
-		JSONObject widgetConfig = JSONObject.parseObject(String.valueOf(data.get("config")));
-		JSONObject config = new JSONObject();
-		config.put("rows", getDimensionConfig(String.valueOf(widgetConfig.get("keys"))));
-		config.put("columns", getDimensionConfig(String.valueOf(widgetConfig.get("groups"))));
-		config.put("filters", getDimensionConfig(String.valueOf(widgetConfig.get("filters"))));
-		config.put("values", getValuesConfig(String.valueOf(widgetConfig.get("values"))));
-
-		String cfg = JSONObject.toJSONString(config);
-
-		Map<String, String> strParams = null;
-		if (query != null) {
-			JSONObject queryO = JSONObject.parseObject(query);
-			strParams = Maps.transformValues(queryO, Functions.toStringFunction());
-		}
-		AggConfig con = ViewAggConfig.getAggConfig(JSONObject.parseObject(cfg, ViewAggConfig.class));
-		return dataProviderService.queryAggData(datasourceId, strParams, datasetId, con, reload);
+	public JSONArray getQueryData(@RequestBody Map<String, Object> params) {
+		return queryDataService.getQueryData(params);
 	}
-
-	@SuppressWarnings("rawtypes")
-	private JSONArray getValuesConfig(String str) {
-		JSONArray jsonArray = JSONObject.parseArray(str);
-		JSONArray result = new JSONArray();
-		if (null != jsonArray && jsonArray.size() > 0) {
-			for (int i = 0; i < jsonArray.size(); i++) {
-				Map map = (Map) JSONObject.parse(String.valueOf(jsonArray.get(i)));
-				JSONArray values = JSONObject.parseArray(String.valueOf(map.get("cols")));
-				if (null != values && values.size() > 0) {
-					for (int j = 0; j < values.size(); j++) {
-						Map value = (Map) JSONObject.parse(String.valueOf(values.get(j)));
-						JSONObject o = new JSONObject();
-						o.put("column", value.get("col"));
-						o.put("aggType", value.get("aggregate_type"));
-						result.add(o);
-					}
-				}
-			}
-		} else {
-			jsonArray = result;
-		}
-		return result;
-	}
-
-	@SuppressWarnings("rawtypes")
-	private JSONArray getDimensionConfig(String str) {
-		JSONArray result = new JSONArray();
-		JSONArray jsonArray = JSONObject.parseArray(str);
-		if (null != jsonArray && jsonArray.size() > 0) {
-			for (int i = 0; i < jsonArray.size(); i++) {
-				Map map = (Map) JSONObject.parse(String.valueOf(jsonArray.get(i)));
-				if ("null".equals(String.valueOf(map.get("group")))) {
-					JSONObject o = new JSONObject();
-					o.put("columnName", map.get("col"));
-					o.put("filterType", map.get("type"));
-					o.put("values", map.get("values"));
-					o.put("id", map.get("id"));
-					result.add(o);
-				} else {
-					JSONArray filters = JSONObject.parseArray(String.valueOf(map.get("filters")));
-					if (null != filters && filters.size() > 0) {
-						for (int j = 0; j < filters.size(); j++) {
-							Map filter = (Map) JSONObject.parse(String.valueOf(filters.get(j)));
-							JSONObject o = new JSONObject();
-							o.put("columnName", filter.get("col"));
-							o.put("filterType", filter.get("type"));
-							o.put("values", filter.get("values"));
-							result.add(o);
-						}
-					}
-				}
-			}
-		} else {
-			result = jsonArray;
-		}
-
-		return result;
-	};
 
 	@RequestMapping(value = "/viewAggDataQuery")
 	public String[] viewAggDataQuery(@RequestParam(name = "datasourceId", required = false) Long datasourceId,
@@ -539,6 +452,12 @@ public class DashboardController {
 		String userId = authenticationService.getCurrentUser().getUserId();
 		String phantomUrl = persistService.getPhantomUrl(id, userId);
 		return new ServiceStatus(ServiceStatus.Status.Success, phantomUrl);
+	}
+
+	@RequestMapping(value = "/viewBoard")
+	public RedirectView viewBoard(@RequestParam(name = "id") Long id) {
+		String phantomUrl = persistService.getPhantomUrl(id, null);
+		return new RedirectView(phantomUrl);
 	}
 
 	@RequestMapping(value = "/tableToxls")
