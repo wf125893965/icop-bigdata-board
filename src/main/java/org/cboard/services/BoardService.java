@@ -59,6 +59,8 @@ public class BoardService {
 
 	private String xmlTemplate = "base";
 
+	private String publishType = "type-report";
+
 	public List<DashboardBoard> getBoardList(String userId) {
 		return boardDao.getBoardList(userId);
 	}
@@ -177,6 +179,7 @@ public class BoardService {
 			function.setFrontProjectname(frontProjectName.substring(1, frontProjectName.length()));
 			function.setListUrl("dashboard/viewBoard.do?id=" + id);
 			function.setModify(false);
+			function.setPublishType(publishType);
 			functions.add(function);
 			functionDubboService.saveOrUpdate(functions);
 			return new ServiceStatus(ServiceStatus.Status.Success, "success");
