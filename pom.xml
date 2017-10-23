@@ -357,6 +357,11 @@
 			<artifactId>icop-orgcenter-api</artifactId>
 			<version>1.5.37</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.tuckey</groupId>
+		    <artifactId>urlrewritefilter</artifactId>
+		    <version>4.0.4</version>
+		</dependency>
 	</dependencies>
 
 </project>

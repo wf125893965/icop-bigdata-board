@@ -460,6 +460,11 @@ public class DashboardController {
 		return new RedirectView(phantomUrl);
 	}
 
+	@RequestMapping(value = "/viewBoards")
+	public RedirectView viewBoards(@RequestParam(name = "id") Long id) {
+		return new RedirectView("render.do?id=" + id);
+	}
+
 	@RequestMapping(value = "/tableToxls")
 	public ResponseEntity<byte[]> tableToxls(@RequestParam(name = "data") String data) {
 		HSSFWorkbook wb = xlsProcessService.tableToxls(JSONObject.parseObject(data));
