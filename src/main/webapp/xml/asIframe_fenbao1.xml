@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+<ModulePrefs title="数据看板" description="数据看板-设备"></ModulePrefs>
+<Content type="html" inline="true">
+<![CDATA[
+<iframe id="shebei_001" style="border: none; background: white; width:100%; height:100%;" src="http://test.cscec3b.com.cn/icop-bigdata-board/render.html?sid=a864172462da4ce88a35d31c3300aa11#?id=1007&pid=dae6a1f862964e73a1e5edc2eba06177" />
+]]>
+</Content>
+</Module>
