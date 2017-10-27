@@ -57,6 +57,7 @@ CBoardEChartRender.prototype.chart = function (group, persist) {
         options.legend.show =false;
     }
     var url = document.location.href;
+    console.log("===== url", url);
     // 如果是本系统使用，否则就是嵌入到门户
     if(url.indexOf("icop-bigdata-board/render.html") > -1){
     	options.color = ['#4AA6FC', '#58CCFF', '#BDE4FF', '#FFB204', '#AB7EFF', '#6F82FF', '#D0CBFF', '#76DDFB', '#A698FF', '#41D4A1', '#75E5A1'];
