@@ -31,6 +31,16 @@ var CBoardEChartRender = function (jqContainer, options, isDeepSpec) {
     this.options = options;
 };
 
+function getCookie(name)
+{
+	var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+	if(arr=document.cookie.match(reg)){
+		console.log("document.cookie", document.cookie);
+		return unescape(arr[2]);}
+	else
+		return null;
+}
+
 CBoardEChartRender.prototype.theme = "theme-fin1"; // 主题
 
 CBoardEChartRender.prototype.chart = function (group, persist) {
@@ -47,7 +57,12 @@ CBoardEChartRender.prototype.chart = function (group, persist) {
         options.legend.show =false;
     }
     
-    options.color = ['#4AA6FC', '#58CCFF', '#BDE4FF', '#FFB204', '#AB7EFF', '#6F82FF', '#D0CBFF', '#76DDFB', '#A698FF', '#41D4A1', '#75E5A1'];
+    // 如果是嵌入到门户，使用适合门户的颜色来渲染图表，否则使用适合本系统的颜色
+    if(getCookie("tenant_token")){
+	    options.color = ['#FF605E', '#FF8B4D', '#FFECE4', '#FEBE09', '#FFDE9A', '#CD7EE8', '#E4CBFF', '#AA6FD7', '#A698FF', '#41D4A1', '#72DB9B'];
+    }else{
+    	options.color = ['#4AA6FC', '#58CCFF', '#BDE4FF', '#FFB204', '#AB7EFF', '#6F82FF', '#D0CBFF', '#76DDFB', '#A698FF', '#41D4A1', '#75E5A1'];
+    }
     /*options.tooltip = {
         trigger: 'axis',
         backgroundColor: 'rgba(74,103,134,0.60)'
