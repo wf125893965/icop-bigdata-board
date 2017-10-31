@@ -7,7 +7,7 @@
     <label>{{'CONFIG.DATA_SOURCE.DATA_PROVIDER'|translate}}</label>
     <select class="form-control" ng-model="curDatasource.type"
             ng-change="changeDs()"
-            ng-options="d for d in providerList"></select>
+            ng-options="d for d in providerList | filter: '!saiku'  | filter: '!Solr' "></select>
 </div>
 <div class="form-group" ng-class="{'has-error': !(verify.dsName || curDatasource.name)}">
     <label>{{'CONFIG.DATA_SOURCE.NAME'|translate}}</label>
