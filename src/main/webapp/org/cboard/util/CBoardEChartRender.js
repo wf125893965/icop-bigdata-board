@@ -57,12 +57,12 @@ CBoardEChartRender.prototype.chart = function (group, persist) {
         options.legend.show =false;
     }
     var url = document.location.href;
-    // render页面是嵌入到门户，使用合适门户的颜色值，否则使用适合本系统的颜色值
+    // render页面是嵌入到门户，使用合适门户的颜色值，否则使用适合本系统的theme-fin1图表主题颜色值
     if(url.indexOf("icop-bigdata-board/render.html") > -1){
     	options.color = ['#FF605E', '#FF8B4D', '#FFECE4', '#FEBE09', '#FFDE9A', '#CD7EE8', '#E4CBFF', '#AA6FD7', '#A698FF', '#41D4A1', '#72DB9B'];
-    }else{
+    }/*else{
     	options.color = ['#4AA6FC', '#58CCFF', '#BDE4FF', '#FFB204', '#AB7EFF', '#6F82FF', '#D0CBFF', '#76DDFB', '#A698FF', '#41D4A1', '#75E5A1'];
-    }
+    }*/
     /*options.tooltip = {
         trigger: 'axis',
         backgroundColor: 'rgba(74,103,134,0.60)'
