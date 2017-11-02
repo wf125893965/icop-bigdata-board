@@ -3,11 +3,15 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
     $scope.loading = true;
     $scope.l = 1;
     $scope.persistFinish = false;
+    $http.get("dashboard/getDatasetList.do").success(function (response) {
+        $scope.datasetList = response;
+    });
 
     var buildRender = function (w, reload) {
         w.render = function (content, optionFilter, scope) {
             w.persist = {};
             var chartType = w.widget.data.config.chart_type;
+            injectFilter(w.widget).data.config.chart_type;
             if(chartType == 'chinaMapBmap'){
                 chartService.render(content, w.widget.data, optionFilter, scope, reload, w.persist, w.relations);
                 w.loading = false;
@@ -58,7 +62,9 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
         });
     };
 
+    var paramInitListener;
     $scope.load = function (reload) {
+    	$scope.paramInit = 0;
         $scope.loading = true;
 
         if ($scope.board) {
@@ -68,7 +74,11 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
                 });
             });
         }
-        $http.get("dashboard/getBoardData.do?id=" + $location.search().id).success(function (response) {
+        var id = $location.search().id;// starter页面做的看板关联，参数中有 $location.search().id
+        if(typeof(id) == "undefined"){ // render页面做的看板关联，根据路径来获取board的id
+        	id = $location.path().split("/").pop();
+        }
+        $http.get("dashboard/getBoardData.do?id=" + id).success(function (response) {
             $scope.loading = false;
             $scope.board = response;
             _.each($scope.board.layout.rows, function (row) {
@@ -81,11 +91,83 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
                     widget.show = true;
                     $scope.l++;
                 });
+                _.each(row.params, function (param) {
+                    if (!param.paramType) {
+                        param.paramType = 'selector';
+                    }
+                });
+            });
+            if (paramInitListener) {
+                paramInitListener(reload);
+            }
+            _.each($scope.board.layout.rows, function (row) {
+                _.each(row.params, function (param) {
+                    $scope.paramInit++;
+                });
+            });
+            if ($scope.board.layout.type == 'timeline') {
+                groupTimeline();
+            }
+            if ($scope.paramInit == 0) {
+                loadWidget(reload);
+            }
+            paramInitListener = $scope.$on('paramInitFinish', function (e, d) {
+                $scope.paramInit--;
+                if ($scope.paramInit == 0) {
+                    loadWidget(reload)
+                }
             });
             $scope.l--;
         });
     };
     $scope.load(false);
+    var loadWidget = function (reload) {
+        paramToFilter();
+        _.each($scope.board.layout.rows, function (row) {
+            _.each(row.widgets, function (widget) {
+                if (!_.isUndefined(widget.hasRole) && !widget.hasRole) {
+                    return;
+                }
+                buildRender(widget, reload);
+                widget.loading = true;
+                if ($scope.board.layout.type == 'timeline') {
+                    if (row.show) {
+                        widget.show = true;
+                    }
+                } else {
+                    widget.show = true;
+                }
+                //real time load task
+                var w = widget.widget.data;
+                var ds = _.find($scope.datasetList, function (e) {
+                    return e.id == w.datasetId;
+                });
+                if (ds && ds.data.interval && ds.data.interval > 0) {
+                    if (!$scope.intervalGroup[w.datasetId] && !widget.sourceId) {
+                        $scope.intervalGroup[w.datasetId] = [];
+                        $scope.intervals.push($interval(function () {
+                            refreshParam();
+                            _.each($scope.intervalGroup[w.datasetId], function (e) {
+                                e();
+                            });
+                        }, ds.data.interval * 1000));
+                    }
+                    $scope.intervalGroup[w.datasetId].push(function () {
+                        try {
+                            if (widget.show) {
+                                chartService.realTimeRender(widget.realTimeTicket, injectFilter(widget.widget).data);
+                                if (widget.modalRealTimeTicket) {
+                                    chartService.realTimeRender(widget.modalRealTimeTicket, injectFilter(widget.widget).data, widget.modalRealTimeOption.optionFilter, null);
+                                }
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    });
+                }
+            });
+        });
+    };
     
     var paramToFilter = function () {
         $scope.widgetFilters = [];
@@ -95,8 +177,9 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
         //将点击的参数赋值到看板上的参数中
         //"{"targetId":3,"params":[{"targetField":"logo","value":"iphone"},{"targetField":"logo1","value":"上海市"}]}" targetField==param.name
 //        if(location.href.split("?")[1]) {
-        if(false) {
-            var urlParam = JSON.parse(decodeURI(location.href.split("?")[1]));
+        var hrefArr = location.href.split("?");
+        if(hrefArr[2] && location.href.indexOf('params') > 0) {
+            var urlParam = JSON.parse(decodeURI(location.href.split("?")[2]));
             _.each($scope.board.layout.rows, function (row) {
                 _.each(row.params, function (param) {
                     var p = _.find(urlParam.params, function (e) {
@@ -107,7 +190,7 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
                     }
                 });
             });
-            location.href = location.href.split("?")[0];
+            location.href = hrefArr[0] + "?" + hrefArr[1].split("#")[0] + "#?id=" + urlParam.targetId;
         }
 
         _.each($scope.board.layout.rows, function (row) {
@@ -140,7 +223,7 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
         if(_.isUndefined($("#relations").val())){
             return;
         }
-        var relations = JSON.parse($("#relations").val());
+        var relations = JSON.parse($("#relations").val() === "" ? "[]" : $("#relations").val());
         for(var i=0;i<relations.length;i++){
             if(relations[i].targetId && relations[i].params && relations[i].params.length>0){
                 for(var j=0;j<relations[i].params.length;j++) {
@@ -234,5 +317,26 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
             widget.loading = true;
             widget.show = true;
         });
+    };
+    
+    $scope.applyParamFilter = function () {
+        paramToFilter();
+        _.each($scope.board.layout.rows, function (row) {
+            _.each(row.widgets, function (w) {
+                try {
+                    chartService.realTimeRender(w.realTimeTicket, injectFilter(w.widget).data);
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+        });
+    };
+
+    $scope.paramToString = function (row) {
+        return _.filter(_.map(row.params, function (e) {
+            return e.title;
+        }), function (e) {
+            return e && e.length > 0;
+        }).join('; ');
     };
 });

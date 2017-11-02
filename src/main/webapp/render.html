@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="css/ionicons.min.css">
+    <link rel="stylesheet" href="iconfont/iconfont.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/AdminLTE.css">
     <link rel="stylesheet" href="css/cboard.css">
@@ -20,7 +21,7 @@
     <link rel="stylesheet" href="plugins/ngJsTree/style.css">
     <link rel="stylesheet" href="plugins/jQueryUI/theme.css">
     <link rel="stylesheet" href="plugins/jQueryUI/jquery-ui.css">
-
+    
     <!-- bmap-->
     <script src="plugins/echart/echarts-3.6.2.min.js"></script>
     <script src="plugins/echart/echarts-bmap.min.js"></script>
@@ -42,6 +43,8 @@
     <script src="lib/ui-select.min.js"></script>
 
     <script src="plugins/jQueryUI/jquery-ui.min.js"></script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <!-- AdminLTE App -->
     <script src="dist/js/app.js"></script>
     <!--ngJsTree -->
@@ -111,6 +114,36 @@
     <input ng-model="relations" ng-hide="true" id="relations"/> <!--json [{},{}]-->
     <div class="row" ng-repeat="row in board.layout.rows track by $index" ng-style="{height:row.height+'px'}">
         <ng-switch on="row.type">
+        	<div ng-switch-when="param">
+                <div class="col-sm-12">
+                    <div class="box" style="border-left: 1px solid #d2d6de; border-right: 1px solid #d2d6de">
+                        <div class="box-header">
+                            <div class="box-tools pull-right" ng-init="paramInfoShow = true">
+                                <div ng-show="paramInfoShow" class="paramTemplate btn btn-box-tool">{{paramToString(row)}}</div>
+                                <button type="button" class="btn btn-box-tool" ng-click="paramInfoShow = !paramInfoShow">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="col-sm-12">
+                                <div style="min-height: 35px;height: auto;padding: 0px">
+                                    <div class="row">
+                                        <div ng-repeat="param in row.params | filter:{paramType:'selector'}:true" ng-controller="paramCtrl" ng-init="init()">
+                                            <ng-include src="'org/cboard/view/dashboard/param/selector.html'" style="float: left"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div ng-repeat="param in row.params | filter:{paramType:'slider'}:true" ng-controller="paramCtrl" ng-init="init()">
+                                            <ng-include src="'org/cboard/view/dashboard/param/slider.html'" class="col-md-{{param.cfg.width}}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div ng-switch-default>
                 <div ng-repeat="widget in row.widgets track by $index">
                     <div ng-if="widget.show">
@@ -176,6 +209,8 @@
 <script src="org/cboard/ng-app.js"></script>
 <script src="org/cboard/ng-config.js"></script>
 <script src="org/cboard/controller/cboard/renderCtrl.js"></script>
+<script src="org/cboard/controller/dashboard/paramCtrl.js"></script>
+<script src="org/cboard/controller/utils/paramSelector.js"></script>
 <script src="org/cboard/controller/config/folderTreeCtrl.js"></script>
 <script src="org/cboard/service/dashboard/dashboardService.js"></script>
 <script src="org/cboard/service/data/dataService.js"></script>
