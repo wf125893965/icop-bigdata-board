@@ -6,7 +6,29 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
     $http.get("dashboard/getDatasetList.do").success(function (response) {
         $scope.datasetList = response;
     });
+    
+    $scope.timelineColor = ['bg-light-blue', 'bg-red', 'bg-aqua', 'bg-green', 'bg-yellow', 'bg-gray', 'bg-navy', 'bg-teal', 'bg-purple', 'bg-orange', 'bg-maroon', 'bg-black'];
 
+    var groupTimeline = function () {
+        $scope.timeline = [];
+        var group = undefined;
+        _.each($scope.board.layout.rows, function (row, idx) {
+            if (idx == 0) {
+                $scope.timelineFilter = row;
+                return;
+            }
+            row.show = false;
+            if (row.node == 'parent') {
+                if (group) {
+                    $scope.timeline.push(group);
+                }
+                group = [];
+                row.show = true;
+            }
+            group.push(row);
+        });
+        $scope.timeline.push(group);
+    };
     var buildRender = function (w, reload) {
         w.render = function (content, optionFilter, scope) {
             w.persist = {};
