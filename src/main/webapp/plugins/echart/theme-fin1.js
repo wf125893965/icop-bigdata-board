@@ -19,8 +19,14 @@
         log('ECharts is not Loaded');
         return;
     }
+    var url = document.location.href;
+    // render页面是嵌入到门户，使用合适门户的颜色值，否则使用适合本系统的theme-fin1图表主题颜色值
+    var color = url.indexOf("icop-bigdata-board/render.html") > -1 ?
+    	['#FF605E', '#FF8B4D', '#FFECE4', '#FEBE09', '#FFDE9A', '#CD7EE8', '#E4CBFF', '#AA6FD7', '#A698FF', '#41D4A1', '#72DB9B']
+    	:['#4AA6FC', '#58CCFF', '#BDE4FF', '#FFB204', '#AB7EFF', '#6F82FF', '#D0CBFF', '#76DDFB', '#A698FF', '#41D4A1', '#75E5A1'];
     echarts.registerTheme('theme-fin1', {
-        "color": [
+        "color": color
+        /*[
         	"#4AA6FC",
             "#58CCFF",
             "#BDE4FF",
@@ -32,6 +38,7 @@
             "#A698FF",
             "#41D4A1",
             "#75E5A1",
+            
             "#6ED0E0",
             "#EF843C",
             "#E24D42",
@@ -49,7 +56,7 @@
             "#F4D598",
             "#70DBED",
             "#333333"
-        ],
+        ]*/,
         "backgroundColor": "rgba(0,0,0,0)",
         "textStyle": {},
         "title": {
