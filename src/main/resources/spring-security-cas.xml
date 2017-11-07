@@ -19,15 +19,18 @@
     <security:http pattern="/plugins/**" security="none"/>
     <security:http pattern="/bootstrap/**" security="none"/>
     <security:http pattern="/js/**" security="none"/>
+    <security:http pattern="/css/**" security="none"/>
+    <security:http pattern="/login**" security="none"/>
+    <security:http pattern="/dashboard/getQueryData.do**" security="none"/>
+        
 
     <security:http use-expressions="true" entry-point-ref="casAuthenticationEntryPoint"
                    auto-config="true">
         <security:intercept-url pattern="/**" access="!anonymous"/>
         <!-- 注销时需要先注销应用程序,再注销cas中心认证服务
         <security:logout logout-url="/j_spring_cas_security_logout" success-handler-ref="requestSingleLogoutFilter" /> -->
-        <security:custom-filter ref="requestSingleLogoutFilter"
-                                before="LOGOUT_FILTER"/>
-        <security:custom-filter after="CAS_FILTER" ref="casAuthenticationFilter"></security:custom-filter>
+        <security:custom-filter ref="requestSingleLogoutFilter" before="LOGOUT_FILTER"/>
+        <security:custom-filter ref="casAuthenticationFilter" after="CAS_FILTER"/>
         <security:csrf disabled="true"/>
     </security:http>
 

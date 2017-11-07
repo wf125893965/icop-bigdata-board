@@ -75,7 +75,7 @@
     </select>
 
     <select id="getUserByLoginName" resultType="org.cboard.pojo.DashboardUser">
-        SELECT user_id userId,login_name loginName,user_name userName,user_status userStatus FROM dashboard_user where login_name = #{0}
+        SELECT user_id userId,login_name loginName,user_password userPassword,user_name userName,user_status userStatus FROM dashboard_user where login_name = #{0}
     </select>
 
     <insert id="saveNewUser" >

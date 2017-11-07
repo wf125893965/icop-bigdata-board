@@ -14,7 +14,7 @@
         <security:intercept-url pattern="/js/**" access="permitAll"/>
         <security:intercept-url pattern="/login**" access="permitAll"/>
         <security:intercept-url pattern="/css/**" access="permitAll"/>
-        <security:intercept-url pattern="/dashboard/getQueryData.do" access="permitAll"/>
+        <security:intercept-url pattern="/dashboard/getQueryData.do**" access="permitAll"/>
         <security:intercept-url pattern="/dashboard/viewBoard.do**" access="permitAll"/>
         
         <security:intercept-url pattern="/**" access="!anonymous"/>
