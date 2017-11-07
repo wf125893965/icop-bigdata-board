@@ -83,7 +83,7 @@
 <!--                         <button type="button" ng-click="param.values.length=param.values.length+1" ng-init="initValues()" class="btn btn-primary btn-xs ng-binding">+</button>
  -->                        <i class="iconfont icon-add toolbar-icon text-blue" style="font-size: 100%;" ng-click="param.values.length=param.values.length+1" ng-init="initValues()"></i> 
                         <div class="row show-grid" style="margin-bottom: 5px" ng-repeat="value in param.values track by $index">
-                            <div class="col-md-10">
+                            <div class="col-xs-10">
                                 <div class="input-group" >
                                     <input type="text" class="form-control" ng-model="param.values[$index]">
                                     <div class="input-group-btn border-right-radius" ng-repeat="_i in [$index]"
@@ -91,7 +91,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-xs-2">
                                 <i class="fa fa-trash-o toolbar-icon" style="margin-left:-15px;"
                                    ng-click="param.values.splice($index, 1)" title="{{'COMMON.REMOVE'|translate}}"></i>
                             </div>
