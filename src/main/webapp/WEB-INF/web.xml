@@ -3,7 +3,7 @@
          xmlns="http://java.sun.com/xml/ns/javaee"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          id="WebApp_ID" version="3.0">
-    <display-name>zhibing_mybatis</display-name>
+    <display-name>icop-bigdata-board</display-name>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
@@ -11,7 +11,7 @@
             classpath:spring.xml,classpath:spring-mybatis.xml,classpath:spring-mvc.xml,classpath:spring-security.xml
         </param-value>
     </context-param>
-
+	
     <!--
     <filter>
         <filter-name>LogFilter</filter-name>
@@ -89,9 +89,8 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
+	
     <listener>
-        <description>spring listener</description>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 

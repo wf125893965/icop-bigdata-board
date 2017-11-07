@@ -16,6 +16,7 @@
 			<list>
 				<value>classpath:config.properties</value>
 				<value>classpath:dubbo.properties</value>
+				<value>classpath:caso.properties</value>
 			</list>
 		</property>
 		<property name="ignoreUnresolvablePlaceholders" value="true" />

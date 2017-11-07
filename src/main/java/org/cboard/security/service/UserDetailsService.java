@@ -39,15 +39,14 @@ public final class UserDetailsService extends AbstractCasAssertionUserDetailsSer
         final List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         User user = new User(
-                (String) assertion.getPrincipal().getAttributes().get("displayName"),
+                (String) assertion.getPrincipal().getName(),
                 NON_EXISTENT_PASSWORD_VALUE,
                 true, true, true, true,
                 grantedAuthorities);
-        user.setCompany((String) assertion.getPrincipal().getAttributes().get("company"));
         user.setDepartment((String) assertion.getPrincipal().getAttributes().get("department"));
-        user.setUserId((String) assertion.getPrincipal().getAttributes().get("employee"));
-        user.setName(assertion.getPrincipal().getName());
-        userDao.saveNewUser(user.getUserId(), user.getUsername(), user.getName());
+        user.setUserId((String) assertion.getPrincipal().getAttributes().get("userId"));
+        user.setName((String) assertion.getPrincipal().getAttributes().get("userCode"));
+        userDao.saveNewUser(user.getUserId(),user.getName() , user.getUsername());
         return user;
     }
 
