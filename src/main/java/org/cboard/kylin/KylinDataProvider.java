@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
@@ -205,6 +204,20 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
 					+ IntStream.range(0, config.getValues().size()).boxed()
 							.map(i -> dimensionConfigHelper.getValueStr(config, i)).collect(Collectors.joining(","))
 					+ ")";
+		case "LIKE":
+			List<String> values = config.getValues();
+			String str = "";
+			if (null != values && values.size() > 0) {
+				for (int i = 0; i < values.size(); i++) {
+					String value = config.getValues().get(i);
+					String v = value.indexOf("%") > -1 ? "'" + value + "' " : "'%" + value + "%' ";
+					str += surroundWithQutaAll(config.getColumnName()) + " LIKE " + v;
+					if (i < values.size() - 1) {
+						str += " AND ";
+					}
+				}
+			}
+			return str;
 		case ">":
 			return surroundWithQutaAll(config.getColumnName()) + " > " + dimensionConfigHelper.getValueStr(config, 0);
 		case "<":
@@ -377,7 +390,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
 		String groupByStr = StringUtils.isBlank(dimColsStr) ? "" : "GROUP BY " + dimColsStr;
 
 		StringJoiner selectColsStr = new StringJoiner(",");
-		
+
 		if (!StringUtils.isBlank(dimColsStr)) {
 			selectColsStr.add(dimColsStr);
 		}

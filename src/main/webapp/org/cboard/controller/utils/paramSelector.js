@@ -2,7 +2,7 @@
  * Created by yfyuan on 2017/5/2.
  */
 cBoard.controller('paramSelector', function ($scope, $uibModalInstance, dataService, param, filter, getSelects, ok) {
-    $scope.type = ['=', '≠', '>', '<', '≥', '≤', '(a,b]', '[a,b)', '(a,b)', '[a,b]'];
+    $scope.type = ['=', '≠', 'LIKE', '>', '<', '≥', '≤', '(a,b]', '[a,b)', '(a,b)', '[a,b]'];
     $scope.param = param;
     $scope.operate = {};
     $scope.filter = filter;
@@ -16,7 +16,7 @@ cBoard.controller('paramSelector', function ($scope, $uibModalInstance, dataServ
         });
     };
     var showValues = function () {
-        var equal = ['=', '≠'];
+        var equal = ['=', '≠', 'LIKE'];
         var openInterval = ['>', '<', '≥', '≤'];
         var closeInterval = ['(a,b]', '[a,b)', '(a,b)', '[a,b]'];
         $scope.operate.equal = $.inArray($scope.param.type, equal) > -1 ? true : false;
