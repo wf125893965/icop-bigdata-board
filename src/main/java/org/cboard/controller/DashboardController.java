@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -59,16 +60,18 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Charsets;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.hash.Hashing;
 
 /**
  * Created by yfyuan on 2016/8/9.
  */
 @RestController
 @RequestMapping("/dashboard")
-public class DashboardController {
+public class DashboardController extends BaseController {
 
 	@Autowired
 	private BoardDao boardDao;
@@ -97,11 +100,8 @@ public class DashboardController {
 	@Autowired
 	private CategoryService categoryService;
 
-	@Autowired
-	private AuthenticationService authenticationService;
-
-	@Autowired
-	private DatasetDao datasetDao;
+    @Autowired
+    private DatasetDao datasetDao;
 
 	@Autowired
 	private DatasetService datasetService;
@@ -115,25 +115,17 @@ public class DashboardController {
 	@Autowired
 	private XlsProcessService xlsProcessService;
 
-	@Autowired
-	private PersistService persistService;
+    @RequestMapping(value = "/test")
+    public ServiceStatus test(@RequestParam(name = "datasource", required = false) String datasource, @RequestParam(name = "query", required = false) String query) {
+        JSONObject queryO = JSONObject.parseObject(query);
+        JSONObject datasourceO = JSONObject.parseObject(datasource);
+        return dataProviderService.test(datasourceO, Maps.transformValues(queryO, Functions.toStringFunction()));
+    }
 
-	@Autowired
-	private QueryDataService queryDataService;
-
-	@RequestMapping(value = "/test")
-	public ServiceStatus test(@RequestParam(name = "datasource", required = false) String datasource,
-			@RequestParam(name = "query", required = false) String query) {
-		JSONObject queryO = JSONObject.parseObject(query);
-		JSONObject datasourceO = JSONObject.parseObject(datasource);
-		return dataProviderService.test(datasourceO, Maps.transformValues(queryO, Functions.toStringFunction()));
-	}
-
-	@RequestMapping(value = "/getDatasourceList")
-	public List<ViewDashboardDatasource> getDatasourceList() {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return datasourceService.getViewDatasourceList(() -> datasourceDao.getDatasourceList(userid));
-	}
+    @RequestMapping(value = "/getDatasourceList")
+    public List<ViewDashboardDatasource> getDatasourceList() {
+        return datasourceService.getViewDatasourceList(() -> datasourceDao.getDatasourceList(user.getUserId()));
+    }
 
 	@RequestMapping(value = "/getProviderList")
 	public Set<String> getProviderList() {
@@ -151,43 +143,25 @@ public class DashboardController {
 		return DataProviderViewManager.getQueryView(type, page);
 	}
 
-	@RequestMapping(value = "/getDatasourceParams")
-	public List<Map<String, Object>> getDatasourceParams(@RequestParam(name = "type") String type) {
-		return DataProviderViewManager.getDatasourceParams(type);
-	}
+    @RequestMapping(value = "/saveNewDatasource")
+    public ServiceStatus saveNewDatasource(@RequestParam(name = "json") String json) {
+        return datasourceService.save(user.getUserId(), json);
+    }
 
-	@RequestMapping(value = "/getDatasourceView")
-	public String getDatasourceView(@RequestParam(name = "type") String type) {
-		return DataProviderViewManager.getDatasourceView(type);
-	}
+    @RequestMapping(value = "/updateDatasource")
+    public ServiceStatus updateDatasource(@RequestParam(name = "json") String json) {
+        return datasourceService.update(user.getUserId(), json);
+    }
 
-	@RequestMapping(value = "/saveNewDatasource")
-	public ServiceStatus saveNewDatasource(@RequestParam(name = "json") String json) {
+    @RequestMapping(value = "/deleteDatasource")
+    public ServiceStatus deleteDatasource(@RequestParam(name = "id") Long id) {
+        return datasourceService.delete(user.getUserId(), id);
+    }
 
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return datasourceService.save(userid, json);
-	}
-
-	@RequestMapping(value = "/updateDatasource")
-	public ServiceStatus updateDatasource(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return datasourceService.update(userid, json);
-	}
-
-	@RequestMapping(value = "/deleteDatasource")
-	public ServiceStatus deleteDatasource(@RequestParam(name = "id") Long id) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return datasourceService.delete(userid, id);
-	}
-
-	@RequestMapping(value = "/saveNewWidget")
-	public ServiceStatus saveNewWidget(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return widgetService.save(userid, json);
-	}
+    @RequestMapping(value = "/saveNewWidget")
+    public ServiceStatus saveNewWidget(@RequestParam(name = "json") String json) {
+        return widgetService.save(user.getUserId(), json);
+    }
 
 	@RequestMapping(value = "/getAllWidgetList")
 	public List<ViewDashboardWidget> getAllWidgetList() {
@@ -195,251 +169,12 @@ public class DashboardController {
 		return Lists.transform(list, ViewDashboardWidget.TO);
 	}
 
-	@RequestMapping(value = "/getWidgetList")
-	public List<ViewDashboardWidget> getWidgetList() {
 
-		String userid = authenticationService.getCurrentUser().getUserId();
-		List<DashboardWidget> list = widgetDao.getWidgetList(userid);
-		return Lists.transform(list, ViewDashboardWidget.TO);
-	}
 
-	@RequestMapping(value = "/updateWidget")
-	public ServiceStatus updateWidget(@RequestParam(name = "json") String json) {
 
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return widgetService.update(userid, json);
-	}
 
-	@RequestMapping(value = "/deleteWidget")
-	public ServiceStatus deleteWidget(@RequestParam(name = "id") Long id) {
 
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return widgetService.delete(userid, id);
-	}
 
-	@RequestMapping(value = "/getBoardList")
-	public List<ViewDashboardBoard> getBoardList() {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		List<DashboardBoard> list = boardService.getBoardList(userid);
-		return Lists.transform(list, ViewDashboardBoard.TO);
-	}
-
-	@RequestMapping(value = "/saveNewBoard")
-	public ServiceStatus saveNewBoard(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return boardService.save(userid, json);
-	}
-
-	@RequestMapping(value = "/updateBoard")
-	public ServiceStatus updateBoard(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return boardService.update(userid, json);
-	}
-
-	@RequestMapping(value = "/deleteBoard")
-	public ServiceStatus deleteBoard(@RequestParam(name = "id") Long id) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return boardService.delete(userid, id);
-	}
-
-	@RequestMapping(value = "/getBoardData")
-	public ViewDashboardBoard getBoardData(@RequestParam(name = "id") Long id) {
-		return boardService.getBoardData(id);
-	}
-
-	@RequestMapping(value = "/saveNewCategory")
-	public ServiceStatus saveNewCategory(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return categoryService.save(userid, json);
-	}
-
-	@RequestMapping(value = "/getCategoryList")
-	public List<DashboardCategory> getCategoryList() {
-		List<DashboardCategory> list = categoryDao.getCategoryList();
-		return list;
-	}
-
-	@RequestMapping(value = "/updateCategory")
-	public ServiceStatus updateCategory(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return categoryService.update(userid, json);
-	}
-
-	@RequestMapping(value = "/deleteCategory")
-	public String deleteCategory(@RequestParam(name = "id") Long id) {
-		return categoryService.delete(id);
-	}
-
-	@RequestMapping(value = "/getWidgetCategoryList")
-	public List<String> getWidgetCategoryList() {
-		return widgetDao.getCategoryList();
-	}
-
-	@RequestMapping(value = "/saveNewDataset")
-	public ServiceStatus saveNewDataset(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return datasetService.save(userid, json);
-	}
-
-	@RequestMapping(value = "/getAllDatasetList")
-	public List<ViewDashboardDataset> getAllDatasetList() {
-		List<DashboardDataset> list = datasetDao.getAllDatasetList();
-		return Lists.transform(list, ViewDashboardDataset.TO);
-	}
-
-	@RequestMapping(value = "/getDatasetList")
-	public List<ViewDashboardDataset> getDatasetList() {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		List<DashboardDataset> list = datasetDao.getDatasetList(userid);
-		return Lists.transform(list, ViewDashboardDataset.TO);
-	}
-
-	@RequestMapping(value = "/updateDataset")
-	public ServiceStatus updateDataset(@RequestParam(name = "json") String json) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return datasetService.update(userid, json);
-	}
-
-	@RequestMapping(value = "/deleteDataset")
-	public ServiceStatus deleteDataset(@RequestParam(name = "id") Long id) {
-
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return datasetService.delete(userid, id);
-	}
-
-	@RequestMapping(value = "/getDatasetCategoryList")
-	public List<String> getDatasetCategoryList() {
-		return datasetDao.getCategoryList();
-	}
-
-	@RequestMapping(value = "/checkWidget")
-	public ServiceStatus checkWidget(@RequestParam(name = "id") Long id) {
-		return widgetService.checkRule(authenticationService.getCurrentUser().getUserId(), id);
-	}
-
-	@RequestMapping(value = "/checkDatasource")
-	public ServiceStatus checkDatasource(@RequestParam(name = "id") Long id) {
-		return datasourceService.checkDatasource(authenticationService.getCurrentUser().getUserId(), id);
-	}
-
-	@RequestMapping(value = "/getDimensionValues")
-	public String[] getDimensionValues(@RequestParam(name = "datasourceId", required = false) Long datasourceId,
-			@RequestParam(name = "query", required = false) String query,
-			@RequestParam(name = "datasetId", required = false) Long datasetId,
-			@RequestParam(name = "colmunName", required = true) String colmunName,
-			@RequestParam(name = "cfg", required = false) String cfg,
-			@RequestParam(name = "reload", required = false, defaultValue = "false") Boolean reload) {
-		Map<String, String> strParams = null;
-		if (query != null) {
-			JSONObject queryO = JSONObject.parseObject(query);
-			strParams = Maps.transformValues(queryO, Functions.toStringFunction());
-		}
-		AggConfig config = null;
-		if (cfg != null) {
-			config = ViewAggConfig.getAggConfig(JSONObject.parseObject(cfg, ViewAggConfig.class));
-		}
-		return dataProviderService.getDimensionValues(datasourceId, strParams, datasetId, colmunName, config, reload);
-	}
-
-	@RequestMapping(value = "/getColumns")
-	public DataProviderResult getColumns(@RequestParam(name = "datasourceId", required = false) Long datasourceId,
-			@RequestParam(name = "query", required = false) String query,
-			@RequestParam(name = "datasetId", required = false) Long datasetId,
-			@RequestParam(name = "reload", required = false, defaultValue = "false") Boolean reload) {
-		Map<String, String> strParams = null;
-		if (query != null) {
-			JSONObject queryO = JSONObject.parseObject(query);
-			strParams = Maps.transformValues(queryO, Functions.toStringFunction());
-		}
-		return dataProviderService.getColumns(datasourceId, strParams, datasetId, reload);
-	}
-
-	@RequestMapping(value = "/getAggregateData")
-	public AggregateResult getAggregateData(@RequestParam(name = "datasourceId", required = false) Long datasourceId,
-			@RequestParam(name = "query", required = false) String query,
-			@RequestParam(name = "datasetId", required = false) Long datasetId, @RequestParam(name = "cfg") String cfg,
-			@RequestParam(name = "reload", required = false, defaultValue = "false") Boolean reload) {
-		Map<String, String> strParams = null;
-		if (query != null) {
-			JSONObject queryO = JSONObject.parseObject(query);
-			strParams = Maps.transformValues(queryO, Functions.toStringFunction());
-		}
-		AggConfig config = ViewAggConfig.getAggConfig(JSONObject.parseObject(cfg, ViewAggConfig.class));
-		return dataProviderService.queryAggData(datasourceId, strParams, datasetId, config, reload);
-	}
-
-	@RequestMapping(value = "/getQueryData")
-	public JSONArray getQueryData(@RequestBody Map<String, Object> params) {
-		return queryDataService.getQueryData(params);
-	}
-
-	@RequestMapping(value = "/viewAggDataQuery")
-	public String[] viewAggDataQuery(@RequestParam(name = "datasourceId", required = false) Long datasourceId,
-			@RequestParam(name = "query", required = false) String query,
-			@RequestParam(name = "datasetId", required = false) Long datasetId,
-			@RequestParam(name = "cfg") String cfg) {
-		Map<String, String> strParams = null;
-		if (query != null) {
-			JSONObject queryO = JSONObject.parseObject(query);
-			strParams = Maps.transformValues(queryO, Functions.toStringFunction());
-		}
-		AggConfig config = ViewAggConfig.getAggConfig(JSONObject.parseObject(cfg, ViewAggConfig.class));
-		return new String[] { dataProviderService.viewAggDataQuery(datasourceId, strParams, datasetId, config) };
-	}
-
-	@RequestMapping(value = "/dashboardWidget")
-	public ViewDashboardWidget dashboardWidget(@RequestParam(name = "id") Long id) {
-		DashboardWidget widget = widgetDao.getWidget(id);
-		return new ViewDashboardWidget(widget);
-	}
-
-	@RequestMapping(value = "/saveJob")
-	public ServiceStatus saveJob(@RequestParam(name = "json") String json) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return jobService.save(userid, json);
-	}
-
-	@RequestMapping(value = "/updateJob")
-	public ServiceStatus updateJob(@RequestParam(name = "json") String json) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return jobService.update(userid, json);
-	}
-
-	@RequestMapping(value = "/getJobList")
-	public List<ViewDashboardJob> getJobList() {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return jobDao.getJobList(userid).stream().map(ViewDashboardJob::new).collect(Collectors.toList());
-	}
-
-	@RequestMapping(value = "/deleteJob")
-	public ServiceStatus deleteJob(@RequestParam(name = "id") Long id) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return jobService.delete(userid, id);
-	}
-
-	@RequestMapping(value = "/execJob")
-	public ServiceStatus execJob(@RequestParam(name = "id") Long id) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return jobService.exec(userid, id);
-	}
-
-	@RequestMapping(value = "/exportBoard")
-	public ResponseEntity<byte[]> exportBoard(@RequestParam(name = "id") Long id) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-		headers.setContentDispositionFormData("attachment", "report.xls");
-		return new ResponseEntity<>(boardService.exportBoard(id, userid), headers, HttpStatus.CREATED);
-	}
 
 	@RequestMapping(value = "/publishBoard")
 	public ServiceStatus publishBoard(@RequestParam(name = "id") Long id) {
@@ -447,66 +182,262 @@ public class DashboardController {
 		return boardService.publishBoard(userId, id);
 	}
 
-	@RequestMapping(value = "/getPreviewUrl")
-	public ServiceStatus getPreviewUrl(@RequestParam(name = "id") Long id) {
-		String userId = authenticationService.getCurrentUser().getUserId();
-		String phantomUrl = persistService.getPhantomUrl(id, userId);
-		return new ServiceStatus(ServiceStatus.Status.Success, phantomUrl);
-	}
+    @RequestMapping(value = "/getWidgetList")
+    public List<ViewDashboardWidget> getWidgetList() {
+        List<DashboardWidget> list = widgetDao.getWidgetList(user.getUserId());
+        return Lists.transform(list, ViewDashboardWidget.TO);
+    }
 
-	@RequestMapping(value = "/viewBoard")
-	public RedirectView viewBoard(@RequestParam(name = "id") Long id) {
-		String phantomUrl = persistService.getPhantomUrl(id, null);
-		return new RedirectView(phantomUrl);
-	}
+    @RequestMapping(value = "/updateWidget")
+    public ServiceStatus updateWidget(@RequestParam(name = "json") String json) {
+        return widgetService.update(user.getUserId(), json);
+    }
 
-	@RequestMapping(value = "/tableToxls")
-	public ResponseEntity<byte[]> tableToxls(@RequestParam(name = "data") String data) {
-		HSSFWorkbook wb = xlsProcessService.tableToxls(JSONObject.parseObject(data));
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try {
-			wb.write(out);
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-			headers.setContentDispositionFormData("attachment", "table.xls");
-			return new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.CREATED);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    @RequestMapping(value = "/deleteWidget")
+    public ServiceStatus deleteWidget(@RequestParam(name = "id") Long id) {
+        return widgetService.delete(user.getUserId(), id);
+    }
 
-	@RequestMapping(value = "/getJobStatus")
-	public ViewDashboardJob getJobStatus(@RequestParam(name = "id") Long id) {
-		return new ViewDashboardJob(jobDao.getJob(id));
-	}
+    @RequestMapping(value = "/getBoardList")
+    public List<ViewDashboardBoard> getBoardList() {
+        List<DashboardBoard> list = boardService.getBoardList(user.getUserId());
+        return Lists.transform(list, ViewDashboardBoard.TO);
+    }
 
-	@RequestMapping(value = "/getBoardParam")
-	public DashboardBoardParam getBoardParam(@RequestParam(name = "boardId") Long boardId) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		return boardDao.getBoardParam(boardId, userid);
-	}
+    @RequestMapping(value = "/saveNewBoard")
+    public ServiceStatus saveNewBoard(@RequestParam(name = "json") String json) {
+        return boardService.save(user.getUserId(), json);
+    }
 
-	@RequestMapping(value = "/saveBoardParam")
-	@Transactional
-	public String saveBoardParam(@RequestParam(name = "boardId") Long boardId,
-			@RequestParam(name = "config") String config) {
-		String userid = authenticationService.getCurrentUser().getUserId();
-		if (boardId == null) {
-			return "";
-		}
-		DashboardBoardParam boardParam = new DashboardBoardParam();
-		boardParam.setBoardId(boardId);
-		boardParam.setUserId(userid);
-		boardParam.setConfig(config);
-		boardDao.deleteBoardParam(boardId, userid);
-		boardDao.saveBoardParam(boardParam);
-		return "1";
-	}
+    @RequestMapping(value = "/updateBoard")
+    public ServiceStatus updateBoard(@RequestParam(name = "json") String json) {
+        return boardService.update(user.getUserId(), json);
+    }
 
-	@ExceptionHandler
-	public ServiceStatus exp(HttpServletResponse response, Exception ex) {
-		response.setStatus(500);
-		return new ServiceStatus(ServiceStatus.Status.Fail, ex.getMessage());
-	}
+    @RequestMapping(value = "/deleteBoard")
+    public ServiceStatus deleteBoard(@RequestParam(name = "id") Long id) {
+        return boardService.delete(user.getUserId(), id);
+    }
+
+    @RequestMapping(value = "/getBoardData")
+    public ViewDashboardBoard getBoardData(@RequestParam(name = "id") Long id) {
+        return boardService.getBoardData(id);
+    }
+
+    @RequestMapping(value = "/saveNewCategory")
+    public ServiceStatus saveNewCategory(@RequestParam(name = "json") String json) {
+        return categoryService.save(user.getUserId(), json);
+    }
+
+    @RequestMapping(value = "/getCategoryList")
+    public List<DashboardCategory> getCategoryList() {
+        List<DashboardCategory> list = categoryDao.getCategoryList();
+        return list;
+    }
+
+    @RequestMapping(value = "/updateCategory")
+    public ServiceStatus updateCategory(@RequestParam(name = "json") String json) {
+        return categoryService.update(user.getUserId(), json);
+    }
+
+    @RequestMapping(value = "/deleteCategory")
+    public String deleteCategory(@RequestParam(name = "id") Long id) {
+        return categoryService.delete(id);
+    }
+
+    @RequestMapping(value = "/getWidgetCategoryList")
+    public List<String> getWidgetCategoryList() {
+        return widgetDao.getCategoryList();
+    }
+
+    @RequestMapping(value = "/saveNewDataset")
+    public ServiceStatus saveNewDataset(@RequestParam(name = "json") String json) {
+        return datasetService.save(user.getUserId(), json);
+    }
+
+    @RequestMapping(value = "/getAllDatasetList")
+    public List<ViewDashboardDataset> getAllDatasetList() {
+        List<DashboardDataset> list = datasetDao.getAllDatasetList();
+        return Lists.transform(list, ViewDashboardDataset.TO);
+    }
+
+    @RequestMapping(value = "/getDatasetList")
+    public List<ViewDashboardDataset> getDatasetList() {
+        List<DashboardDataset> list = datasetDao.getDatasetList(user.getUserId());
+        return Lists.transform(list, ViewDashboardDataset.TO);
+    }
+
+    @RequestMapping(value = "/updateDataset")
+    public ServiceStatus updateDataset(@RequestParam(name = "json") String json) {
+        return datasetService.update(user.getUserId(), json);
+    }
+
+    @RequestMapping(value = "/deleteDataset")
+    public ServiceStatus deleteDataset(@RequestParam(name = "id") Long id) {
+        return datasetService.delete(user.getUserId(), id);
+    }
+
+    @RequestMapping(value = "/getDatasetCategoryList")
+    public List<String> getDatasetCategoryList() {
+        return datasetDao.getCategoryList();
+    }
+
+    @RequestMapping(value = "/checkWidget")
+    public ServiceStatus checkWidget(@RequestParam(name = "id") Long id) {
+        return widgetService.checkRule(user.getUserId(), id);
+    }
+
+    @RequestMapping(value = "/checkDatasource")
+    public ServiceStatus checkDatasource(@RequestParam(name = "id") Long id) {
+        return datasourceService.checkDatasource(user.getUserId(), id);
+    }
+
+    @RequestMapping(value = "/getDimensionValues")
+    public String[] getDimensionValues(@RequestParam(name = "datasourceId", required = false) Long datasourceId, @RequestParam(name = "query", required = false) String query, @RequestParam(name = "datasetId", required = false) Long datasetId, @RequestParam(name = "colmunName", required = true) String colmunName, @RequestParam(name = "cfg", required = false) String cfg, @RequestParam(name = "reload", required = false, defaultValue = "false") Boolean reload) {
+        Map<String, String> strParams = null;
+        if (query != null) {
+            JSONObject queryO = JSONObject.parseObject(query);
+            strParams = Maps.transformValues(queryO, Functions.toStringFunction());
+        }
+        AggConfig config = null;
+        if (cfg != null) {
+            config = ViewAggConfig.getAggConfig(JSONObject.parseObject(cfg, ViewAggConfig.class));
+        }
+        return dataProviderService.getDimensionValues(datasourceId, strParams, datasetId, colmunName, config, reload);
+    }
+
+    @RequestMapping(value = "/getColumns")
+    public DataProviderResult getColumns(@RequestParam(name = "datasourceId", required = false) Long datasourceId,
+                                         @RequestParam(name = "query", required = false) String query,
+                                         @RequestParam(name = "datasetId", required = false) Long datasetId, @RequestParam(name = "reload", required = false, defaultValue = "false") Boolean reload) {
+        Map<String, String> strParams = null;
+        if (query != null) {
+            JSONObject queryO = JSONObject.parseObject(query);
+            strParams = Maps.transformValues(queryO, Functions.toStringFunction());
+        }
+        return dataProviderService.getColumns(datasourceId, strParams, datasetId, reload);
+    }
+
+    @RequestMapping(value = "/getAggregateData")
+    public AggregateResult getAggregateData(@RequestParam(name = "datasourceId", required = false) Long datasourceId,
+                                            @RequestParam(name = "query", required = false) String query,
+                                            @RequestParam(name = "datasetId", required = false) Long datasetId,
+                                            @RequestParam(name = "cfg") String cfg,
+                                            @RequestParam(name = "reload", required = false, defaultValue = "false") Boolean reload) {
+        Map<String, String> strParams = null;
+        if (query != null) {
+            JSONObject queryO = JSONObject.parseObject(query);
+            strParams = Maps.transformValues(queryO, Functions.toStringFunction());
+        }
+        AggregateResult aggResult = null;
+        // data source aggreagtor instance need not lock
+        boolean isDataSourceAggInstance = dataProviderService.isDataSourceAggInstance(datasourceId, strParams, datasetId);
+        String randomFlag = isDataSourceAggInstance ? UUID.randomUUID().toString() : "1";
+        String lockString = Hashing.md5().newHasher()
+                .putString(datasourceId + query + datasetId + user.getUserId() + randomFlag, Charsets.UTF_8)
+                .hash().toString();
+        synchronized (lockString.intern()) {
+            AggConfig config = ViewAggConfig.getAggConfig(JSONObject.parseObject(cfg, ViewAggConfig.class));
+            aggResult = dataProviderService.queryAggData(datasourceId, strParams, datasetId, config, reload);
+        }
+        return aggResult;
+    }
+
+    @RequestMapping(value = "/viewAggDataQuery")
+    public String[] viewAggDataQuery(@RequestParam(name = "datasourceId", required = false) Long datasourceId, @RequestParam(name = "query", required = false) String query, @RequestParam(name = "datasetId", required = false) Long datasetId, @RequestParam(name = "cfg") String cfg) {
+        Map<String, String> strParams = null;
+        if (query != null) {
+            JSONObject queryO = JSONObject.parseObject(query);
+            strParams = Maps.transformValues(queryO, Functions.toStringFunction());
+        }
+        AggConfig config = ViewAggConfig.getAggConfig(JSONObject.parseObject(cfg, ViewAggConfig.class));
+        return new String[]{dataProviderService.viewAggDataQuery(datasourceId, strParams, datasetId, config)};
+    }
+
+    @RequestMapping(value = "/dashboardWidget")
+    public ViewDashboardWidget dashboardWidget(@RequestParam(name = "id") Long id) {
+        DashboardWidget widget = widgetDao.getWidget(id);
+        return new ViewDashboardWidget(widget);
+    }
+
+    @RequestMapping(value = "/saveJob")
+    public ServiceStatus saveJob(@RequestParam(name = "json") String json) {
+        return jobService.save(user.getUserId(), json);
+    }
+
+    @RequestMapping(value = "/updateJob")
+    public ServiceStatus updateJob(@RequestParam(name = "json") String json) {
+        return jobService.update(user.getUserId(), json);
+    }
+
+    @RequestMapping(value = "/getJobList")
+    public List<ViewDashboardJob> getJobList() {
+        return jobDao.getJobList(user.getUserId()).stream().map(ViewDashboardJob::new).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/deleteJob")
+    public ServiceStatus deleteJob(@RequestParam(name = "id") Long id) {
+        return jobService.delete(user.getUserId(), id);
+    }
+
+    @RequestMapping(value = "/execJob")
+    public ServiceStatus execJob(@RequestParam(name = "id") Long id) {
+        return jobService.exec(user.getUserId(), id);
+    }
+
+    @RequestMapping(value = "/exportBoard")
+    public ResponseEntity<byte[]> exportBoard(@RequestParam(name = "id") Long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "report.xls");
+        return new ResponseEntity<>(boardService.exportBoard(id, user.getUserId()), headers, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/tableToxls")
+    public ResponseEntity<byte[]> tableToxls(@RequestParam(name = "data") String data) {
+        HSSFWorkbook wb = xlsProcessService.tableToxls(JSONObject.parseObject(data));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            wb.write(out);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "table.xls");
+            return new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.CREATED);
+        } catch (IOException e) {
+            LOG.error("", e);
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "/getJobStatus")
+    public ViewDashboardJob getJobStatus(@RequestParam(name = "id") Long id) {
+        return new ViewDashboardJob(jobDao.getJob(id));
+    }
+
+    @RequestMapping(value = "/getBoardParam")
+    public DashboardBoardParam getBoardParam(@RequestParam(name = "boardId") Long boardId) {
+        return boardDao.getBoardParam(boardId, user.getUserId());
+    }
+
+    @RequestMapping(value = "/saveBoardParam")
+    @Transactional
+    public String saveBoardParam(@RequestParam(name = "boardId") Long boardId, @RequestParam(name = "config") String config) {
+        if (boardId == null) {
+            return "";
+        }
+        DashboardBoardParam boardParam = new DashboardBoardParam();
+        boardParam.setBoardId(boardId);
+        boardParam.setUserId(user.getUserId());
+        boardParam.setConfig(config);
+        boardDao.deleteBoardParam(boardId, user.getUserId());
+        boardDao.saveBoardParam(boardParam);
+        return "1";
+    }
+
+    @ExceptionHandler
+    public ServiceStatus exp(HttpServletResponse response, Exception ex) {
+        response.setStatus(500);
+        LOG.error("Gloal exception Handler", ex);
+        return new ServiceStatus(ServiceStatus.Status.Fail, ex.getMessage());
+    }
 }

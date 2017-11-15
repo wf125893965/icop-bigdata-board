@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.cboard.cache.CacheManager;
 import org.cboard.dataprovider.aggregator.InnerAggregator;
 import org.cboard.dataprovider.config.AggConfig;
 import org.cboard.dataprovider.config.CompositeConfig;
@@ -24,16 +23,10 @@ import org.cboard.dataprovider.result.AggregateResult;
 import org.cboard.dataprovider.result.ColumnIndex;
 import org.cboard.exception.CBoardException;
 import org.cboard.util.NaturalOrderComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
+import static org.cboard.dataprovider.DataProvider.separateNull;
 
 /**
  * Created by yfyuan on 2017/1/18.
@@ -42,241 +35,224 @@ import com.google.common.hash.Hashing;
 @Scope("prototype")
 public class JvmAggregator extends InnerAggregator {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+    public void loadData(String[][] data, long interval) {
+        rawDataCache.put(getCacheKey(), data, interval * 1000);
+    }
 
-	@Autowired
-	@Qualifier("rawDataCache")
-	private CacheManager<String[][]> rawDataCache;
+    public String[] queryDimVals(String columnName, AggConfig config) throws Exception {
+        String[][] data = rawDataCache.get(getCacheKey());
+        Map<String, Integer> columnIndex = getColumnIndex(data);
+        final int fi = columnIndex.get(columnName);
+        Filter rowFilter = new Filter(config, columnIndex);
+        String[] filtered = Arrays.stream(data).parallel().skip(1)
+                .filter(rowFilter::filter)
+                .map(e -> e[fi])
+                .distinct()
+                .toArray(String[]::new);
+        return filtered;
+    }
 
-	private String getCacheKey() {
-		return Hashing.md5().newHasher()
-				.putString(JSONObject.toJSON(dataSource).toString() + JSONObject.toJSON(query).toString(),
-						Charsets.UTF_8)
-				.hash().toString();
-	}
+    private Map<String, Integer> getColumnIndex(String[][] data) {
+        Map<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < data[0].length; i++) {
+            map.put(data[0][i], i);
+        }
+        return map;
+    }
 
-	public boolean checkExist() {
-		return rawDataCache.get(getCacheKey()) != null;
-	}
+    @Override
+    public String[] getColumn() throws Exception {
+        String[][] data = rawDataCache.get(getCacheKey());
+        try {
+            return data[0];
+        } catch (Exception e) {
+            throw new CBoardException("dataset is null");
+        }
+    }
 
-	public void cleanExist() {
-		rawDataCache.remove(getCacheKey());
-	}
+    @Override
+    public AggregateResult queryAggData(AggConfig config) throws Exception {
+        String[][] data = rawDataCache.get(getCacheKey());
+        Map<String, Integer> columnIndex = getColumnIndex(data);
+        Filter rowFilter = new Filter(config, columnIndex);
 
-	public void loadData(String[][] data, long interval) {
-		rawDataCache.put(getCacheKey(), data, interval * 1000);
-	}
+        Stream<ColumnIndex> columns = config.getColumns().stream().map(ColumnIndex::fromDimensionConfig);
+        Stream<ColumnIndex> rows = config.getRows().stream().map(ColumnIndex::fromDimensionConfig);
+        List<ColumnIndex> valuesList = config.getValues().stream().map(ColumnIndex::fromValueConfig).collect(Collectors.toList());
+        List<ColumnIndex> dimensionList = Stream.concat(columns, rows).collect(Collectors.toList());
+        dimensionList.forEach(e -> e.setIndex(columnIndex.get(e.getName())));
+        valuesList.forEach(e -> e.setIndex(columnIndex.get(e.getName())));
 
-	public String[] queryDimVals(String columnName, AggConfig config) throws Exception {
-		String[][] data = rawDataCache.get(getCacheKey());
-		Map<String, Integer> columnIndex = getColumnIndex(data);
-		final int fi = columnIndex.get(columnName);
-		Filter rowFilter = new Filter(config, columnIndex);
-		String[] filtered = Arrays.stream(data).parallel().skip(1).filter(rowFilter::filter).map(e -> e[fi]).distinct()
-				.toArray(String[]::new);
-		return filtered;
-	}
+        Map<Dimensions, Double[]> grouped = Arrays.stream(data).skip(1).filter(rowFilter::filter)
+                .collect(Collectors.groupingBy(row -> {
+                    String[] ds = dimensionList.stream().map(
+                            d -> row[d.getIndex()]
+                    ).toArray(String[]::new);
+                    return new Dimensions(ds);
+                }, AggregateCollector.getCollector(valuesList)));
 
-	private Map<String, Integer> getColumnIndex(String[][] data) {
-		Map<String, Integer> map = new HashMap<>();
-		for (int i = 0; i < data[0].length; i++) {
-			map.put(data[0][i], i);
-		}
-		return map;
-	}
+        String[][] result = new String[grouped.keySet().size()][dimensionList.size() + valuesList.size()];
+        int i = 0;
+        for (Dimensions d : grouped.keySet()) {
+            result[i++] = Stream.concat(Arrays.stream(d.dimensions), Arrays.stream(grouped.get(d)).map(e -> e.toString())).toArray(String[]::new);
+        }
+        int dimSize = dimensionList.size();
+        for (String[] row : result) {
+            IntStream.range(0, dimSize).forEach(d -> {
+                if (row[d] == null) row[d] = NULL_STRING;
+            });
+        }
+        dimensionList.addAll(valuesList);
+        IntStream.range(0, dimensionList.size()).forEach(j -> dimensionList.get(j).setIndex(j));
+        return new AggregateResult(dimensionList, result);
+    }
 
-	@Override
-	public String[] getColumn() throws Exception {
-		String[][] data = rawDataCache.get(getCacheKey());
-		try {
-			return data[0];
-		} catch (Exception e) {
-			throw new CBoardException("dataset is null");
-		}
-	}
+    private class Dimensions {
+        private String[] dimensions;
 
-	@Override
-	public AggregateResult queryAggData(AggConfig config) throws Exception {
-		String[][] data = rawDataCache.get(getCacheKey());
-		Map<String, Integer> columnIndex = getColumnIndex(data);
-		Filter rowFilter = new Filter(config, columnIndex);
+        public Dimensions(String[] dimensions) {
+            this.dimensions = dimensions;
+        }
 
-		Stream<ColumnIndex> columns = config.getColumns().stream().map(ColumnIndex::fromDimensionConfig);
-		Stream<ColumnIndex> rows = config.getRows().stream().map(ColumnIndex::fromDimensionConfig);
-		List<ColumnIndex> valuesList = config.getValues().stream().map(ColumnIndex::fromValueConfig)
-				.collect(Collectors.toList());
-		List<ColumnIndex> dimensionList = Stream.concat(columns, rows).collect(Collectors.toList());
-		dimensionList.forEach(e -> e.setIndex(columnIndex.get(e.getName())));
-		valuesList.forEach(e -> e.setIndex(columnIndex.get(e.getName())));
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
-		Map<Dimensions, Double[]> grouped = Arrays.stream(data).skip(1).filter(rowFilter::filter)
-				.collect(Collectors.groupingBy(row -> {
-					String[] ds = dimensionList.stream().map(d -> row[d.getIndex()]).toArray(String[]::new);
-					return new Dimensions(ds);
-				}, AggregateCollector.getCollector(valuesList)));
+            Dimensions that = (Dimensions) o;
 
-		String[][] result = new String[grouped.keySet().size()][dimensionList.size() + valuesList.size()];
-		int i = 0;
-		for (Dimensions d : grouped.keySet()) {
-			result[i++] = Stream
-					.concat(Arrays.stream(d.dimensions), Arrays.stream(grouped.get(d)).map(e -> e.toString()))
-					.toArray(String[]::new);
-		}
-		int dimSize = dimensionList.size();
-		for (String[] row : result) {
-			IntStream.range(0, dimSize).forEach(d -> {
-				if (row[d] == null)
-					row[d] = NULL_STRING;
-			});
-		}
-		dimensionList.addAll(valuesList);
-		IntStream.range(0, dimensionList.size()).forEach(j -> dimensionList.get(j).setIndex(j));
-		return new AggregateResult(dimensionList, result);
-	}
+            // Probably incorrect - comparing Object[] arrays with Arrays.equals
+            return Arrays.equals(dimensions, that.dimensions);
+        }
 
-	private class Dimensions {
-		private String[] dimensions;
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(dimensions);
+        }
+    }
 
-		public Dimensions(String[] dimensions) {
-			this.dimensions = dimensions;
-		}
+    private class Filter {
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (o == null || getClass() != o.getClass())
-				return false;
+        private List<ConfigComponent> ruleList;
+        private Map<String, Integer> columnIndex;
+        private Comparator comparator = new NaturalOrderComparator();
 
-			Dimensions that = (Dimensions) o;
+        public Filter(AggConfig config, Map<String, Integer> columnIndex) {
+            ruleList = new ArrayList<>();
+            if (config != null) {
+                ruleList.addAll(config.getColumns());
+                ruleList.addAll(config.getRows());
+                ruleList.addAll(config.getFilters());
+            }
+            this.columnIndex = columnIndex;
+        }
 
-			// Probably incorrect - comparing Object[] arrays with Arrays.equals
-			return Arrays.equals(dimensions, that.dimensions);
-		}
+        private boolean checkConfigComponent(ConfigComponent component, String[] row) {
+            if (component instanceof DimensionConfig) {
+                return checkRule((DimensionConfig) component, row);
+            } else if (component instanceof CompositeConfig) {
+                CompositeConfig compositeConfig = (CompositeConfig) component;
+                if (compositeConfig.getConfigComponents().size() < 1) {
+                    return false;
+                }
+                if ("AND".equalsIgnoreCase(compositeConfig.getType())) {
+                    return compositeConfig.getConfigComponents().stream().allMatch(e -> checkConfigComponent(e, row));
+                } else if ("OR".equalsIgnoreCase(compositeConfig.getType())) {
+                    return compositeConfig.getConfigComponents().stream().anyMatch(e -> checkConfigComponent(e, row));
+                }
+            }
+            return false;
+        }
 
-		@Override
-		public int hashCode() {
-			return Arrays.hashCode(dimensions);
-		}
-	}
+        private boolean checkRule(DimensionConfig rule, String[] row) {
+            if (rule.getValues().size() == 0 || rule.getValues().get(0) == null) {
+                return true;
+            }
+            String v = row[columnIndex.get(rule.getColumnName())];
+            String a = rule.getValues().get(0);
+            String b = rule.getValues().size() >= 2 ? rule.getValues().get(1) : null;
+            if (NULL_STRING.equals(a)) {
+                switch ((rule.getFilterType())) {
+                    case "=":
+                        return v == null;
+                    case "≠":
+                        return v != null;
+                }
+            }
+            if (StringUtils.isEmpty(v)) {
+                return false;
+            }
+            switch (rule.getFilterType()) {
+                case "=":
+                case "eq":
+                    return rule.getValues().stream().anyMatch(e -> e.equals(v));
+                case "≠":
+                case "ne":
+                    return rule.getValues().stream().allMatch(e -> !e.equals(v));
+                case "LIKE":
+    				return rule.getValues().stream().allMatch(e -> {
+    					// 匹配规则：
+    					// 1. 忽略大小写，不支持中间匹配%
+    					// 2. 前后都有%（%a%），表示包含a
+    					// 3. %在首位（%a），表示以a结尾
+    					// 4. %在末位（a%），表示以a开头
+    					// 5. 前后都没有%，表示完全匹配，就是=
+    					String p = e.replaceAll("%", "").toLowerCase();
+    					if (e.startsWith("%") && e.endsWith("%") && v.toLowerCase().contains(p)) { // 前后都有%
+    						return true;
+    					} else if (e.startsWith("%") && v.toLowerCase().endsWith(p)) { // %在首位
+    						return true;
+    					} else if (e.endsWith("%") && v.toLowerCase().startsWith(p)) { // %在末位
+    						return true;
+    					} else if (!e.startsWith("%") && !e.endsWith("%") && v.toLowerCase().equals(p)) {
+    						return true;
+    					} else {
+    						return false;
+    					}
+    				});
+                case ">":
+                    return comparator.compare(v, a) > 0;
+                case "<":
+                    return comparator.compare(v, a) < 0;
+                case "≥":
+                    return comparator.compare(v, a) >= 0;
+                case "≤":
+                    return comparator.compare(v, a) <= 0;
+                case "(a,b]":
+                    return (rule.getValues().size() >= 2) &&
+                            (comparator.compare(v, a) > 0) &&
+                            (comparator.compare(v, b) <= 0);
+                case "[a,b)":
+                    return (rule.getValues().size() >= 2) &&
+                            (comparator.compare(v, a) >= 0) &&
+                            (comparator.compare(v, b) < 0);
+                case "(a,b)":
+                    return (rule.getValues().size() >= 2) &&
+                            (comparator.compare(v, a) > 0) &&
+                            (comparator.compare(v, b) < 0);
+                case "[a,b]":
+                    return (rule.getValues().size() >= 2) &&
+                            (comparator.compare(v, a) >= 0) &&
+                            (comparator.compare(v, b) <= 0);
+            }
+            return true;
+        }
 
-	private class Filter {
+        public boolean filter(String[] row) {
+            boolean result = ruleList.stream().map(rule -> separateNull(rule)).allMatch(rule ->
+                    checkConfigComponent(rule, row)
+            );
+            return result;
+        }
 
-		private List<ConfigComponent> ruleList;
-		private Map<String, Integer> columnIndex;
-		private Comparator comparator = new NaturalOrderComparator();
+        private Comparable[] tryToNumber(String... args) {
+            boolean allNumber = Arrays.stream(args).allMatch(e -> NumberUtils.isNumber(e));
+            if (allNumber) {
+                return Arrays.stream(args).mapToDouble(Double::parseDouble).boxed().toArray(Double[]::new);
+            } else {
+                return args;
+            }
+        }
 
-		public Filter(AggConfig config, Map<String, Integer> columnIndex) {
-			ruleList = new ArrayList<>();
-			if (config != null) {
-				ruleList.addAll(config.getColumns());
-				ruleList.addAll(config.getRows());
-				ruleList.addAll(config.getFilters());
-			}
-			this.columnIndex = columnIndex;
-		}
-
-		private boolean checkConfigComponent(ConfigComponent component, String[] row) {
-			if (component instanceof DimensionConfig) {
-				return checkRule((DimensionConfig) component, row);
-			} else if (component instanceof CompositeConfig) {
-				CompositeConfig compositeConfig = (CompositeConfig) component;
-				if (compositeConfig.getConfigComponents().size() < 1) {
-					return false;
-				}
-				if ("AND".equalsIgnoreCase(compositeConfig.getType())) {
-					return compositeConfig.getConfigComponents().stream().allMatch(e -> checkConfigComponent(e, row));
-				} else if ("OR".equalsIgnoreCase(compositeConfig.getType())) {
-					return compositeConfig.getConfigComponents().stream().anyMatch(e -> checkConfigComponent(e, row));
-				}
-			}
-			return false;
-		}
-
-		private boolean checkRule(DimensionConfig rule, String[] row) {
-			if (rule.getValues().size() == 0 || rule.getValues().get(0) == null) {
-				return true;
-			}
-			String v = row[columnIndex.get(rule.getColumnName())];
-			String a = rule.getValues().get(0);
-			String b = rule.getValues().size() >= 2 ? rule.getValues().get(1) : null;
-			if (NULL_STRING.equals(a)) {
-				switch ((rule.getFilterType())) {
-				case "=":
-					return v == null;
-				case "≠":
-					return v != null;
-				}
-			}
-			if (StringUtils.isEmpty(v)) {
-				return false;
-			}
-			switch (rule.getFilterType()) {
-			case "=":
-			case "eq":
-				return rule.getValues().stream().anyMatch(e -> e.equals(v));
-			case "≠":
-			case "ne":
-				return rule.getValues().stream().allMatch(e -> !e.equals(v));
-			case "LIKE":
-				return rule.getValues().stream().allMatch(e -> {
-					// 匹配规则：
-					// 1. 忽略大小写，不支持中间匹配%
-					// 2. 前后都有%（%a%），表示包含a
-					// 3. %在首位（%a），表示以a结尾
-					// 4. %在末位（a%），表示以a开头
-					// 5. 前后都没有%，表示完全匹配，就是=
-					String p = e.replaceAll("%", "").toLowerCase();
-					if (e.startsWith("%") && e.endsWith("%") && v.toLowerCase().contains(p)) { // 前后都有%
-						return true;
-					} else if (e.startsWith("%") && v.toLowerCase().endsWith(p)) { // %在首位
-						return true;
-					} else if (e.endsWith("%") && v.toLowerCase().startsWith(p)) { // %在末位
-						return true;
-					} else if (!e.startsWith("%") && !e.endsWith("%") && v.toLowerCase().equals(p)) {
-						return true;
-					} else {
-						return false;
-					}
-				});
-			case ">":
-				return comparator.compare(v, a) > 0;
-			case "<":
-				return comparator.compare(v, a) < 0;
-			case "≥":
-				return comparator.compare(v, a) >= 0;
-			case "≤":
-				return comparator.compare(v, a) <= 0;
-			case "(a,b]":
-				return (rule.getValues().size() >= 2) && (comparator.compare(v, a) > 0)
-						&& (comparator.compare(v, b) <= 0);
-			case "[a,b)":
-				return (rule.getValues().size() >= 2) && (comparator.compare(v, a) >= 0)
-						&& (comparator.compare(v, b) < 0);
-			case "(a,b)":
-				return (rule.getValues().size() >= 2) && (comparator.compare(v, a) > 0)
-						&& (comparator.compare(v, b) < 0);
-			case "[a,b]":
-				return (rule.getValues().size() >= 2) && (comparator.compare(v, a) >= 0)
-						&& (comparator.compare(v, b) <= 0);
-			}
-			return true;
-		}
-
-		public boolean filter(String[] row) {
-			boolean result = ruleList.stream().map(rule -> separateNull(rule))
-					.allMatch(rule -> checkConfigComponent(rule, row));
-			return result;
-		}
-
-		private Comparable[] tryToNumber(String... args) {
-			boolean allNumber = Arrays.stream(args).allMatch(e -> NumberUtils.isNumber(e));
-			if (allNumber) {
-				return Arrays.stream(args).mapToDouble(Double::parseDouble).boxed().toArray(Double[]::new);
-			} else {
-				return args;
-			}
-		}
-
-	}
+    }
 }

@@ -1,6 +1,8 @@
 package org.cboard.services;
 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.net.URLDecoder;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,7 +10,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
+import org.cboard.exception.CBoardException;
 import org.cboard.security.service.LocalSecurityFilter;
 import org.cboard.services.persist.PersistContext;
 import org.cboard.util.SystemUtil;
@@ -26,13 +29,11 @@ import com.alibaba.fastjson.JSONObject;
 public class PersistService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PersistService.class);
-
 	private String scriptPath = new File(this.getClass().getResource("/phantom.js").getFile()).getPath();
+	private static final ConcurrentMap<String, PersistContext> TASK_MAP = new ConcurrentHashMap<>();
 
 	@Autowired
 	private HttpServletRequest request;
-
-	private static final ConcurrentMap<String, PersistContext> TASK_MAP = new ConcurrentHashMap<>();
 
 	public PersistContext persist(Long dashboardId, String userId) {
 		String persistId = UUID.randomUUID().toString().replaceAll("-", "");
@@ -68,9 +69,25 @@ public class PersistService {
 						this.getClass().getResource("/phantomjs/phantomjs-2.1.1-windows/bin/phantomjs.exe").getFile())
 								.getPath();
 			}
+
 			String cmd = String.format("%s %s %s", phantomjsPath, scriptPath, phantomUrl);
 			LOG.info("Run phantomjs command: {}", cmd);
 			process = Runtime.getRuntime().exec(cmd);
+			final Process p = process;
+			new Thread(() -> {
+				InputStreamReader ir = new InputStreamReader(p.getInputStream());
+				LineNumberReader input = new LineNumberReader(ir);
+				String line;
+				try {
+					while ((line = input.readLine()) != null) {
+						LOG.info(line);
+					}
+					LOG.info("Finished command " + cmd);
+				} catch (Exception e) {
+					LOG.error("Error", e);
+					p.destroy();
+				}
+			}).start();
 			synchronized (context) {
 				context.wait(10 * 60 * 1000);
 			}
@@ -81,9 +98,9 @@ public class PersistService {
 			if (process != null) {
 				process.destroy();
 			}
-			e.printStackTrace();
+			LOG.error(getClass().getName(), e);
+			throw new CBoardException(e.getMessage());
 		}
-		return null;
 	}
 
 	public String getPhantomUrl(Long dashboardId, String userId) {

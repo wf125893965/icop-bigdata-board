@@ -34,18 +34,22 @@ cBoard.controller('renderCtrl', function ($timeout, $rootScope, $scope, $state, 
             w.persist = {};
             var chartType = w.widget.data.config.chart_type;
             injectFilter(w.widget).data.config.chart_type;
-            if(chartType == 'chinaMapBmap'){
-                chartService.render(content, w.widget.data, optionFilter, scope, reload, w.persist, w.relations);
-                w.loading = false;
-                $scope.l--;
-            } else {
-                chartService.render(content, w.widget.data, optionFilter, scope, reload, w.persist, w.relations).then(function (d) {
-                    w.realTimeTicket = d;
+            try {
+                if (chartType == 'chinaMapBmap') {
+                    chartService.render(content, w.widget.data, optionFilter, scope, reload, w.persist, w.relations);
                     w.loading = false;
                     $scope.l--;
-                }, function (error) {
-                    $scope.l--;
-                });
+                } else {
+                    chartService.render(content, w.widget.data, optionFilter, scope, reload, w.persist, w.relations).then(function (d) {
+                        w.realTimeTicket = d;
+                        w.loading = false;
+                        $scope.l--;
+                    }, function (error) {
+                        $scope.l--;
+                    });
+                }
+            } catch (e) {
+                console.error(e);
             }
         };
     };

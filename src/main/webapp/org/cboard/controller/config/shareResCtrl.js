@@ -18,15 +18,26 @@ cBoard.controller('shareResCtrl', function ($scope, $http, ModalUtils, $filter) 
         id: 'Dashboard',
         text: translate('ADMIN.BOARD'),
         parent: '#',
-        state: {disabled: true}
+        icon: 'fa fa-dashboard fa-lg',
+        state: {
+            disabled: true
+        }
     }, {
-        id: 'Dataset', text: translate('ADMIN.DATASET'), parent: '#',
-        state: {disabled: true}
+        id: 'Dataset',
+        text: translate('ADMIN.DATASET'),
+        parent: '#',
+        icon: 'fa fa-cubes fa-lg',
+        state: {
+            disabled: true
+        }
     }, {
         id: 'Widget',
         text: translate('ADMIN.WIDGET'),
         parent: '#',
-        state: {disabled: true}
+        icon: 'fa fa-bar-chart-o fa-lg',
+        state: {
+            disabled: true
+        }
     }];
 
     var getBoardList = function () {
@@ -91,9 +102,9 @@ cBoard.controller('shareResCtrl', function ($scope, $http, ModalUtils, $filter) 
                         listOut.push({
                             "id": 'parent' + '_' + type + '_' + newParentId,
                             "parent": parent,
-                            "text": a,
+                            "text": a
                             /*icon: 'fa fa-fw fa-folder-o',*/
-                            state: {disabled: true}
+                            //,state: {disabled: true}
                         });
                     }
                     parent = 'parent' + '_' + type + '_' + newParentId;
@@ -126,10 +137,10 @@ cBoard.controller('shareResCtrl', function ($scope, $http, ModalUtils, $filter) 
                     }
                 },
                 checkbox: {
-                    three_state: false
+                    three_state: true
                 },
                 version: 1,
-                plugins: ['types', 'unique'],
+                /**plugins: ['types', 'unique'],
                 types : {
 	                default : {
 	                    valid_children : ["default","file"],
@@ -138,10 +149,11 @@ cBoard.controller('shareResCtrl', function ($scope, $http, ModalUtils, $filter) 
 	                file : {
 	                    icon : 'fa fa-file'
 	                }
-	            }
+	            }*/
+                plugins: ['types', 'checkbox', 'unique']
             };
             _.delay(function () {
-                $scope.treeInstance.jstree(true).open_all();
+                $scope.treeInstance.jstree(true);
             }, 500);
         });
     }();
@@ -196,7 +208,13 @@ cBoard.controller('shareResCtrl', function ($scope, $http, ModalUtils, $filter) 
                 return e.roleId == r;
             })
         });
+    };
 
-
+    $scope.jstree_open_all = function () {
+        $scope.treeInstance.jstree(true).open_all();
+    };
+    
+    $scope.jstree_close_all = function () {
+        $scope.treeInstance.jstree(true).close_all();
     }
 });

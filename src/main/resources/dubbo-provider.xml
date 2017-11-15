@@ -7,7 +7,7 @@
     http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 	<description>cboard</description>
 	<!-- application anme -->
-	<dubbo:application name="cboard" />
+	<dubbo:application name="icop-bigdata-board" />
 	<dubbo:provider retries="0" timeout="${dubbo.timeout}" />
 	<dubbo:registry protocol="zookeeper" address="${zookeeper.addr}" />
 	<dubbo:reference id="functionDubboService" interface="com.yyjz.icop.support.api.service.FunctionDubboService" check="false" url="${dubbo.url.functionDubboService}" timeout="10000" />

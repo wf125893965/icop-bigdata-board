@@ -1,0 +1,7 @@
+<!DOCTYPE configuration
+PUBLIC "-//ibatis.apache.org//DTD Config 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-config.dtd">
+<!-- 这个必须 再次引入，否则 分页插件加载不成功 ， 因为读取不到配置文件里面的 jdbc.dbType 加载不成功 -->
+<configuration>
+<properties resource="config.properties" /> 
+</configuration>

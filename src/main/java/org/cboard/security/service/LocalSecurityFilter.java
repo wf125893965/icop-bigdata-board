@@ -27,33 +27,33 @@ import com.google.common.cache.LoadingCache;
  */
 public class LocalSecurityFilter implements Filter {
 
-	private static LoadingCache<String, String> sidCache = CacheBuilder.newBuilder()
-			.expireAfterAccess(1, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
-				@Override
-				public String load(String key) throws Exception {
-					return null;
-				}
-			});
 
-	public static void put(String sid, String uid) {
-		sidCache.put(sid, uid);
-	}
+    private static LoadingCache<String, String> sidCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
+        @Override
+        public String load(String key) throws Exception {
+            return null;
+        }
+    });
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
+    public static void put(String sid, String uid) {
+        sidCache.put(sid, uid);
+    }
 
-	}
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
 
-	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-			throws IOException, ServletException {
-		SecurityContext context = (SecurityContext) ((HttpServletRequest) servletRequest).getSession()
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    	SecurityContext context = (SecurityContext) ((HttpServletRequest) servletRequest).getSession()
 				.getAttribute("SPRING_SECURITY_CONTEXT");
-		Authentication authentication = null;
+        Authentication authentication = null;
 		if(context!=null){
 			authentication = context.getAuthentication();
 		}
-		if ("/render.html".equals(((HttpServletRequest) servletRequest).getServletPath())) {
+        
+        if ("/render.html".equals(((HttpServletRequest) servletRequest).getServletPath())) {
 			if (authentication == null || ("shareUser").equals(authentication.getName())) {
 				context = SecurityContextHolder.getContext();
 				User user = new User("shareUser", "", new ArrayList<>());
@@ -66,11 +66,11 @@ public class LocalSecurityFilter implements Filter {
 				((HttpServletRequest) servletRequest).getSession().setAttribute("SPRING_SECURITY_CONTEXT", null);
 			}
 		}
-		filterChain.doFilter(servletRequest, servletResponse);
-	}
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
 
-	@Override
-	public void destroy() {
+    @Override
+    public void destroy() {
 
-	}
+    }
 }
