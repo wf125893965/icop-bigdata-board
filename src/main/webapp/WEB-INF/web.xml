@@ -54,15 +54,6 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>SetTenantidFilter</filter-name>
-        <filter-class>org.cboard.security.service.SetTenantidFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>SetTenantidFilter</filter-name>
-        <url-pattern>/dashboard/viewAggDataQuery.do</url-pattern>
-    </filter-mapping>
-
-    <filter>
         <filter-name>LocalSecurityFilter</filter-name>
         <filter-class>org.cboard.security.service.LocalSecurityFilter</filter-class>
     </filter>

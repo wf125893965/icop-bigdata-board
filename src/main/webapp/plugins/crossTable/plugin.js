@@ -204,19 +204,24 @@ var crossTable = {
                     }
                     cur_data = "<div class='table_drill_cell' " + d + ">" + cur_data + "</div>";
                 }
-                if (m > 0) {
-                    if (currentCell.rowSpan == 'row_null' && rowParentCell.rowSpan == 'row_null' && !isFirstLine) {
-                        rowContent += "<th class=row_null><div></div></th>";
-                    } else {
-                        rowContent += "<th style='text-align:"+align+"' class=row><div>" + cur_data + "</div></th>";
-                    }
-                } else {
-                    if (currentCell.rowSpan == 'row_null' && !isFirstLine) {
-                        rowContent += "<th class=row_null><div></div></th>";
-                    } else {
-                        rowContent += "<th style='text-align:"+align+"' class=row><div>" + cur_data + "</div></th>";
-                    }
-                }
+                
+               if (chartConfig.keys[m].sort) {
+	               if (m > 0) {
+	                    if (currentCell.rowSpan == 'row_null' && rowParentCell.rowSpan == 'row_null' && !isFirstLine) {
+	                        rowContent += "<th class=row_null><div></div></th>";
+	                    } else {
+	                        rowContent += "<th style='text-align:"+align+"' class=row><div>" + cur_data + "</div></th>";
+	                    }
+	                } else {
+	                    if (currentCell.rowSpan == 'row_null' && !isFirstLine) {
+	                        rowContent += "<th class=row_null><div></div></th>";
+	                    } else {
+	                        rowContent += "<th style='text-align:"+align+"' class=row><div>" + cur_data + "</div></th>";
+	                    }
+	                }
+               } else {
+            	   rowContent += "<th style='text-align:"+align+"' class=row><div>" + cur_data + "</div></th>";
+               }
             }
             for (var y = chartConfig.keys.length; y < data[n].length; y++) {
                 var align = chartConfig.values[0].cols[(y-chartConfig.keys.length)%chartConfig.values[0].cols.length].align;

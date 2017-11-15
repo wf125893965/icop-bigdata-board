@@ -27,6 +27,7 @@ import org.cboard.services.AuthenticationService;
 import org.cboard.services.RoleService;
 import org.cboard.util.CookiesUtil;
 import org.cboard.util.NaturalOrderComparator;
+import org.cboard.util.SetTenantidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,6 +186,11 @@ public abstract class DataProvider {
 			Cookie cookie = CookiesUtil.getCookieByName(request, "companyId");
 			if (null != cookie) {
 				String companyId = cookie.getValue();
+				try {
+					SetTenantidUtil.setTenantid(request);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				List<CompanyVO> CompanyVOLst = iCompanyService.getChildrenCompanyById(companyId);
 				for (CompanyVO vo : CompanyVOLst) {
 					if (!StringUtils.isEmpty(vo.getId()))
