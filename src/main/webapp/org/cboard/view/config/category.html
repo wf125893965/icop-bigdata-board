@@ -17,7 +17,7 @@
                                     <a>
                                         {{o.name}}
                                         <span class="pull-right" ng-show="x" ng-init="x=false" style="color: #008EFE;">
-                                            <i class="iconfont icon-bianji1 toolbar-icon" style="cursor: pointer" ng-click="editBordCategory(o)" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
+                                            <i class="iconfont icon-bianji1 toolbar-icon" style="cursor: pointer" ng-click="editBordCategory(o)" title="{{'COMMON.EDIT'|translate}}"></i>
                                             <i class="iconfont icon-shanchu toolbar-icon text-red" style="cursor: pointer" ng-click="deleteBordCategory(o)" title="{{'COMMON.DELETE'|translate}}"></i>
                                         </span>
                                     </a>
@@ -37,6 +37,10 @@
             <div class="box" ng-show="optFlag == 'new' || optFlag == 'edit'">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{curCategory.name}}</h3>
+                    <div class="box-tools pull-right" ng-switch="optFlag">
+                        <span ng-switch-when="edit" class="toolbar-icon" style="font-size: 90%;"><i class="iconfont icon-bianji1"></i> {{'COMMON.EDIT'|translate}}</span>
+                        <span ng-switch-when="new" class="toolbar-icon" style="font-size: 90%;"><i class="iconfont icon-add"></i> {{'COMMON.NEW'|translate}}</span>
+                    </div>
                 </div>
                 <form class="form-horizontal">
                     <div class="box-body">

@@ -1,7 +1,7 @@
 <!-- Content Wrapper. Contains page content -->
 <ng-include src="'org/cboard/view/dashboard/layout/header.html'"></ng-include>
 <div id="inner-container" class="content">
-    <div class="n_fixed_area box box-solid" style="border-left: 1px solid #d2d6de; border-right: 1px solid #d2d6de" ng-if="timelineFilter.params.length > 0">
+    <div class="box" style="border-left: 1px solid #d2d6de; border-right: 1px solid #d2d6de" ng-if="timelineFilter.params.length > 0">
         <div class="box-header">
             <div class="box-tools pull-right" ng-init="paramInfoShow = true">
                 <div ng-show="paramInfoShow" class="paramTemplate btn btn-box-tool">{{paramToString(timelineFilter)}}</div>
