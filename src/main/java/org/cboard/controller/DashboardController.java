@@ -455,15 +455,13 @@ public class DashboardController extends BaseController {
 
 	@RequestMapping(value = "/getPreviewUrl")
 	public ServiceStatus getPreviewUrl(@RequestParam(name = "id") Long id) {
-		String userId = authenticationService.getCurrentUser().getUserId();
-		String phantomUrl = persistService.getPhantomUrl(id, userId);
+		String phantomUrl = persistService.getPhantomUrl(id, user.getUserId());
 		return new ServiceStatus(ServiceStatus.Status.Success, phantomUrl);
 	}
 
 	@RequestMapping(value = "/publishBoard")
 	public ServiceStatus publishBoard(@RequestParam(name = "id") Long id) {
-		String userId = authenticationService.getCurrentUser().getUserId();
-		return boardService.publishBoard(userId, id);
+		return boardService.publishBoard(user.getUserId(), id);
 	}
 
 	@RequestMapping(value = "/getQueryData")
