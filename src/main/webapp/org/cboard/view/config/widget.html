@@ -7,19 +7,12 @@
                 <div class="box-header with-border">
                     <!-- <i class="fa fa-bar-chart-o"></i> --> <h3 class="box-title"> {{'CONFIG.WIDGET.WIDGET'|translate}}</h3>
                     <div class="box-tools pull-right">
-<!-- 
-                        <i class="iconfont icon-add toolbar-icon" ng-click="newWgt()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="iconfont icon-fuzhi toolbar-icon" ng-click="copyNode()" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="iconfont icon-bianji1 toolbar-icon" ng-click="editNode()" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="iconfont icon-shanchu toolbar-icon text-red"  ng-click="deleteNode()" title="{{'COMMON.DELETE'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="iconfont icon-xiala toolbar-icon text-black" data-widget="collapse"></i>
- -->
                         <i class="fa fa-info toolbar-icon" ng-click="showInfo()" title="{{'COMMON.INFORMATION'|translate}}"></i>&nbsp;
-                        <i class="fa fa-plus toolbar-icon" ng-click="newWgt()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;
-                        <i ng-show="!liteMode" class="fa fa-copy toolbar-icon" ng-click="copyNode()" title="{{'COMMON.COPY'|translate}}"></i>
-                        <i ng-show="!liteMode" class="fa fa-edit toolbar-icon" ng-click="editNode()" title="{{'COMMON.EDIT'|translate}}"></i>
-                        <i ng-show="!liteMode" class="fa fa-trash-o toolbar-icon" ng-click="deleteNode()" title="{{'COMMON.DELETE'|translate}}"></i>
-                        <i class="fa fa-reorder toolbar-icon" data-widget="collapse"></i>
+                        <i class="iconfont icon-add toolbar-icon" ng-click="newWgt()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;
+                        <i ng-show="!liteMode" class="iconfont icon-fuzhi toolbar-icon" ng-click="copyNode()" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;
+                        <i ng-show="!liteMode" class="iconfont icon-bianji1 toolbar-icon" ng-click="editNode()" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
+                        <i ng-show="!liteMode" class="iconfont icon-shanchu toolbar-icon text-red" ng-click="deleteNode()" title="{{'COMMON.DELETE'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-xiala toolbar-icon text-black" data-widget="collapse"></i>
                     </div>
                 </div>
                 <div class="box-body">
@@ -34,9 +27,8 @@
                 <div class="box-header with-border">
                     <!-- <i class="fa fa-cube"></i> --> <h3 class="box-title"> {{'CONFIG.DATASET.DATASET'|translate}}</h3>
                     <div class="box-tools pull-right">
-                       <!-- <i class="iconfont icon-xiala toolbar-icon text-black" data-widget="collapse"></i> --> 
-                        <i class="fa fa-refresh toolbar-icon" ng-click="refreshSchema()"></i>
-                        <i class="fa fa-reorder toolbar-icon" data-widget="collapse"></i>
+                        <i class="iconfont icon-xingzhuang toolbar-icon" ng-click="refreshSchema()"></i>
+                        <i class="iconfont icon-xiala toolbar-icon text-black" data-widget="collapse"></i>
                     </div>
                 </div>
                 <div class="box-body" ng-include="'org/cboard/view/config/chart/template/schema.html'" style="padding: 10px 0px; overflow-x: auto; font-size: small;"></div>
@@ -46,13 +38,13 @@
             <div class="box" ng-show="optFlag == 'new' || optFlag == 'edit'">
                 <div class="box-header with-border">
                     <!-- <h3 class="box-title">{{widgetName}}<span ng-if="widgetId"> - {{widgetId}}</span></h3> -->
-                    <div class="user-block">
+                    <div class="user-block" style="min-height: 40.667px;">
                         <span class="username" style="margin-left: 0px;">{{widgetName}}</span>
                         <span class="description" style="margin-left: 0px;">{{getCurDatasetName()}}</span>
                     </div>
-                    <div class="box-tools pull-right" ng-switch="optFlag">
-                        <span ng-switch-when="edit" class="toolbar-icon"><i class="iconfont icon-bianji1" style="font-size: 100%;"></i> {{'COMMON.EDIT'|translate}}</span>
-                        <span ng-switch-when="new" class="toolbar-icon"><i class="iconfont icon-add" style="font-size: 100%;"></i> {{'COMMON.NEW'|translate}}</span>
+                    <div class="box-tools pull-right" ng-switch="optFlag" style="margin-top: 10px; margin-bottom: 10px;">
+                        <span ng-switch-when="edit" class="toolbar-icon" style="font-size: 90%;"><i class="iconfont icon-bianji1"></i> {{'COMMON.EDIT'|translate}}</span>
+                        <span ng-switch-when="new" class="toolbar-icon" style="font-size: 90%;"><i class="iconfont icon-add"></i> {{'COMMON.NEW'|translate}}</span>
                     </div>
                 </div>
                 <div class="box-body" style="height: 66vh;">

@@ -1977,7 +1977,7 @@ label {
   border-bottom-left-radius: 3px;
   border-top: 1px solid #f4f4f4;
   padding: 20px 10px 10px 10px;
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
 }
 .chart-legend {
   margin: 10px 0;

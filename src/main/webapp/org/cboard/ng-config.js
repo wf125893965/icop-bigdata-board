@@ -6,7 +6,7 @@
 angular.module('cBoard').config(['$stateProvider', function ($stateProvider) {
     $stateProvider
         .state('home', {
-            url: '',
+            url: '/homepage',
             templateUrl: 'org/cboard/view/cboard/homepage.html',
             controller: 'homepageCtrl'
         })

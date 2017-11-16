@@ -6,11 +6,11 @@
                 <div class="box-header with-border">
                     <!-- <i class="fa fa-cubes"></i> --> <h3 class="box-title"> {{'CONFIG.DATASET.DATASET'|translate}}</h3>
                     <div class="box-tools pull-right">
-                        <i class="fa fa-info toolbar-icon" ng-click="showInfo()" title="{{'COMMON.INFORMATION'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-plus toolbar-icon" ng-click="newDs()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-copy toolbar-icon" ng-click="copyNode()" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-edit toolbar-icon" ng-click="editNode()" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-trash-o toolbar-icon"  ng-click="deleteNode()" title="{{'COMMON.DELETE'|translate}}"></i>
+                        <i class="fa fa-info toolbar-icon" ng-click="showInfo()" title="{{'COMMON.INFORMATION'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-add toolbar-icon" ng-click="newDs()" title="{{'COMMON.NEW'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-fuzhi toolbar-icon" ng-click="copyNode()" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-bianji1 toolbar-icon" ng-click="editNode()" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-shanchu toolbar-icon text-red"  ng-click="deleteNode()" title="{{'COMMON.DELETE'|translate}}"></i>
                     </div>
                 </div>
                 <div class="box-body">
@@ -95,8 +95,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="row" ng-show="selects" style="margin-top: 5px;"> -->
-                            <div class="row" ng-show="curDataset.data.schema">
+                            <div class="row" ng-show="curDataset.data.schema" style="margin-top: 5px;">
                                 <div class="col-md-6">
                                     <div class="form-control" style="min-height: 200px; height: auto;padding: 0px; border: 2px dashed #d2d6de">
                                         <span ng-repeat="o in selects"

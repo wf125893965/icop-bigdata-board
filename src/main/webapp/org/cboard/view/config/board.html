@@ -6,11 +6,11 @@
                 <div class="box-header with-border">
                     <!-- <i class="fa fa-dashboard"></i> --> <h3 class="box-title">{{'CONFIG.DASHBOARD.DASHBOARD'|translate}}</h3>
                     <div class="box-tools pull-right operateBox">
-                        <i class="fa fa-info toolbar-icon" ng-click="showInfo()" title="{{'COMMON.INFORMATION'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-copy toolbar-icon" ng-click="copyNode()" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-edit toolbar-icon" ng-click="editNode()" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-trash-o toolbar-icon"  ng-click="deleteNode()" title="{{'COMMON.DELETE'|translate}}"></i>&nbsp;&nbsp;
-                        <i class="fa fa-plus toolbar-icon" ng-click="newOperate()" title="{{'COMMON.NEW'|translate}}"></i>
+                        <i class="fa fa-info toolbar-icon" ng-click="showInfo()" title="{{'COMMON.INFORMATION'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-fuzhi toolbar-icon" ng-click="copyNode()" title="{{'COMMON.COPY'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-bianji1 toolbar-icon" ng-click="editNode()" title="{{'COMMON.EDIT'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-shanchu toolbar-icon text-red" ng-click="deleteNode()" title="{{'COMMON.DELETE'|translate}}"></i>&nbsp;
+                        <i class="iconfont icon-add toolbar-icon" ng-click="newOperate()" title="{{'COMMON.NEW'|translate}}"></i>
                         <div class="newBoard hideOperate">
                             <!--<span class="newFreeLayout" ng-click="newFreeLayout()">New free layout</span>-->
                             <span class="newGridLayout" ng-click="newGridLayout()">{{'CONFIG.DASHBOARD.NEW_GRID_LAYOUT'|translate}}</span>
@@ -29,8 +29,8 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">{{curBoard.name}}</h3>
                     <div class="box-tools pull-right" ng-switch="optFlag">
-                        <span ng-switch-when="edit" class="toolbar-icon"><i class="iconfont icon-bianji1" style="font-size: 100%;"></i> {{'COMMON.EDIT'|translate}}</span>
-                        <span ng-switch-when="new" class="toolbar-icon"><i class="iconfont icon-add" style="font-size: 100%;"></i> {{'COMMON.NEW'|translate}}</span>
+                        <span ng-switch-when="edit" class="toolbar-icon" style="font-size: 90%;"><i class="iconfont icon-bianji1"></i> {{'COMMON.EDIT'|translate}}</span>
+                        <span ng-switch-when="new" class="toolbar-icon" style="font-size: 90%;"><i class="iconfont icon-add"></i> {{'COMMON.NEW'|translate}}</span>
                     </div>
                 </div>
                 <div class="box-body">
