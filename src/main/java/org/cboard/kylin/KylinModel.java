@@ -23,7 +23,6 @@ class KylinModel implements Serializable {
 	private Map<String, String> columnTable = new HashMap<String, String>();
 	private Map<String, String> tableAlias = new HashMap<String, String>();
 	private Map<String, String> columnType = new HashMap<String, String>();
-	private static final String QUOTATAION = "\"";
 
 	/*
 	 * public String getColumnAndAlias(String column) { return
@@ -130,18 +129,18 @@ class KylinModel implements Serializable {
 	public String formatTableName(String rawName) {
 		String tmp = rawName.replaceAll("\"", "");
 		StringJoiner joiner = new StringJoiner(".");
-		Arrays.stream(tmp.split("\\.")).map(i -> surroundWithQuta(i)).forEach(joiner::add);
+		Arrays.stream(tmp.split("\\.")).forEach(joiner::add);
 		return joiner.toString();
 	}
 	
-	private String surroundWithQuta(String text) {
+	/*private String surroundWithQuta(String text) {
 		return QUOTATAION + text + QUOTATAION;
-	}
+	}*/
 
 	private String surroundWithQutaAll(String text) {
 		String table = StringUtils.substringBefore(text, ".");
 		String column = StringUtils.substringAfter(text, ".");
-		return table + "." + surroundWithQuta(column);
+		return table + "." + column;
 	}
 
 }

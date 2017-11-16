@@ -1,8 +1,16 @@
 package org.cboard.kylin;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.cboard.cache.CacheManager;
@@ -19,15 +27,16 @@ import org.cboard.dataprovider.config.DimensionConfig;
 import org.cboard.dataprovider.result.AggregateResult;
 import org.cboard.dataprovider.util.DPCommonUtils;
 import org.cboard.dataprovider.util.SqlHelper;
+import org.cboard.dataprovider.util.SqlSyntaxHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.web.client.RestTemplate;
 
-import java.sql.*;
-import java.util.*;
-import java.util.stream.Stream;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 /**
  * Created by yfyuan on 2017/3/6.
@@ -37,8 +46,6 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
 
     private static final Logger LOG = LoggerFactory.getLogger(KylinDataProvider.class);
     
-    private static final String QUOTATAION = "\"";
-
     @DatasourceParameter(label = "Kylin Server *",
             type = DatasourceParameter.Type.Input,
             required = true,
@@ -68,6 +75,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
 
     private KylinModel kylinModel;
     private SqlHelper sqlHelper;
+    private SqlSyntaxHelper sqlSyntaxHelper;
 
     private String getKey(Map<String, String> dataSource, Map<String, String> query) {
         return Hashing.md5().newHasher().putString(JSONObject.toJSON(dataSource).toString() + JSONObject.toJSON(query).toString(), Charsets.UTF_8).hash().toString();
@@ -150,7 +158,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             whereStr =  sqlHelper.assembleFilterSql(filterHelpers);
         }
         fsql = "SELECT %s FROM %s %s %s GROUP BY %s ORDER BY %s";
-        exec = String.format(fsql, surroundWithQutaAll(columnName), formatTableName(tableName), StringUtils.substringBefore(columnName, "."), whereStr, surroundWithQutaAll(columnName), surroundWithQutaAll(columnName));
+        exec = String.format(fsql, sqlSyntaxHelper.surroundWithQutaAll(columnName), sqlSyntaxHelper.formatTableName(tableName), StringUtils.substringBefore(columnName, "."), whereStr, sqlSyntaxHelper.surroundWithQutaAll(columnName), sqlSyntaxHelper.surroundWithQutaAll(columnName));
         LOG.info(exec);
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
@@ -230,25 +238,11 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
         try {
             kylinModel = getModel();
             sqlHelper = new SqlHelper(kylinModel.geModelSql(), false);
-            sqlHelper.setSqlSyntaxHelper(new KylinSyntaxHelper(kylinModel));
+            sqlSyntaxHelper = new KylinSyntaxHelper(kylinModel);
+            sqlHelper.setSqlSyntaxHelper(sqlSyntaxHelper);
         } catch (Exception e) {
             LOG.error("", e);
         }
     }
     
-    
-    private String surroundWithQutaAll(String text) {
-		String table = StringUtils.substringBefore(text, ".");
-		String column = StringUtils.substringAfter(text, ".");
-		return table + "." + surroundWithQuta(column);
-	}
-    private String surroundWithQuta(String text) {
-		return QUOTATAION + text + QUOTATAION;
-	}
-    private String formatTableName(String rawName) {
-		String tmp = rawName.replaceAll("\"", "");
-		StringJoiner joiner = new StringJoiner(".");
-		Arrays.stream(tmp.split("\\.")).map(i -> surroundWithQuta(i)).forEach(joiner::add);
-		return joiner.toString();
-	}
 }
