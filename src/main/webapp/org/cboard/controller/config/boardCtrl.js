@@ -267,12 +267,13 @@ cBoard.controller('boardCtrl',
             return;
         }
         ModalUtils.confirm(translate("COMMON.CONFIRM_SAVE_BEFORE_PREVIEW"), "modal-warning", "lg", function () {
+            var newTab = $window.open('', '_blank');
             $scope.saveBoard(false)
                 .then(function () {
                     if (!Id) {
                         Id = $scope.curBoard.id;
                     }
-                    $state.go('mine.view', {id: Id});
+                    // $state.go('mine.view', {id: Id});//保存完后自动跳转到看板视图
                     
                     $http.post("dashboard/getPreviewUrl.do", {
                     	id: Id
