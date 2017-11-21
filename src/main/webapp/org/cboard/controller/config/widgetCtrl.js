@@ -1049,6 +1049,7 @@ cBoard.controller('widgetCtrl', function ($scope, $state, $stateParams, $http, $
             if ($scope.optFlag == 'new') {
                 $http.post("dashboard/saveNewWidget.do", {json: angular.toJson(o)}).success(function (serviceStatus) {
                     if (serviceStatus.status == '1') {
+                        $scope.optFlag = 'none';
                         getWidgetList();
                         getCategoryList();
                         ModalUtils.alert(translate("COMMON.SUCCESS"), "modal-success", "sm");

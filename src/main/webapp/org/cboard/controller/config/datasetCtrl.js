@@ -224,6 +224,7 @@ cBoard.controller('datasetCtrl', function ($scope, $http, $state, $stateParams, 
         if ($scope.optFlag == 'new') {
             $http.post("dashboard/saveNewDataset.do", {json: angular.toJson(ds)}).success(function (serviceStatus) {
                 if (serviceStatus.status == '1') {
+                    $scope.optFlag = 'none';
                     getCategoryList();
                     getDatasetList();
                     $scope.verify = {dsName: true};
