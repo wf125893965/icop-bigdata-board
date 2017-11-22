@@ -22,7 +22,6 @@
     <security:http pattern="/css/**" security="none"/>
     <security:http pattern="/login**" security="none"/>
     <security:http pattern="/dashboard/getQueryData.do**" security="none"/>
-    <security:http pattern="/dashboard/getBoardData.do**" security="none"/>
         
 
     <security:http use-expressions="true" entry-point-ref="casAuthenticationEntryPoint"
