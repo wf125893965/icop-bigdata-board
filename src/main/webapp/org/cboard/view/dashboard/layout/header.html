@@ -6,7 +6,7 @@
 		</span>
     </h5>
     <div class="breadcrumb" style="cursor: pointer" >
-        <div style="display: inline-block">
+        <div style="display: inline-block" ng-show="board.layout.containsParam" >
             <button type="button" class="btn btn-transparent btn-sm dropdown-toggle" data-toggle="dropdown"><i class="iconfont icon-tiaojian"></i>&nbsp;&nbsp;{{"COMMON.PARAM" | translate}}
                 <span class="iconfont icon-ArrowCopy"></span>
             </button>
@@ -41,12 +41,8 @@
                 <span ng-show="exportStatus"><i class="fa fa-spinner fa-spin"></i> Loading</span>
             </button>
         </div>
-        <!-- <div style="display: inline-block" ng-click="publish()">
-            <button class="btn btn-transparent btn-sm">
-                <span><i class="iconfont icon-fabu"></i>&nbsp;&nbsp;{{"COMMON.PUBLISH" | translate}}</span>
-            </button>
-        </div> -->
-        <div style="display: inline-block" ng-click="editBoard()">
+
+        <div style="display: inline-block" ng-click="editBoard()" ng-show="isShowMenu('config.board')">
             <button class="btn btn-transparent btn-sm">
                 <span><i class="iconfont icon-bianji1"></i>&nbsp;{{"COMMON.EDIT" | translate}}</span>
             </button>
