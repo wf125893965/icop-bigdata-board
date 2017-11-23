@@ -21,8 +21,12 @@
     <security:http pattern="/js/**" security="none"/>
     <security:http pattern="/css/**" security="none"/>
     <security:http pattern="/login**" security="none"/>
-    <security:http pattern="/dashboard/getQueryData.do**" security="none"/>
-        
+    <security:http pattern="/i18n/**" security="none"/>
+    <security:http pattern="/imgs/**" security="none"/>
+    <security:http pattern="/render.html**" security="none"/>
+    <security:http pattern="/commons/**" security="none"/>
+    <security:http pattern="/dashboard/**" security="none"/>
+    <security:http pattern="/org/cboard/**" security="none"/>
 
     <security:http use-expressions="true" entry-point-ref="casAuthenticationEntryPoint"
                    auto-config="true">

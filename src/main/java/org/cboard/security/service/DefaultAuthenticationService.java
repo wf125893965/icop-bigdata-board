@@ -1,5 +1,7 @@
 package org.cboard.security.service;
 
+import java.util.ArrayList;
+
 import org.cboard.dto.User;
 import org.cboard.services.AuthenticationService;
 import org.springframework.security.core.Authentication;
@@ -19,11 +21,15 @@ public class DefaultAuthenticationService implements AuthenticationService {
         }
         Authentication authentication = context.getAuthentication();
         if (authentication == null) {
-            return null;
+			User user = new User("shareUser", "", new ArrayList<>());
+			user.setUserId("1");
+			return user;
         }
         User user = (User) authentication.getPrincipal();
         if (user == null) {
-            return null;
+        	user = new User("shareUser", "", new ArrayList<>());
+			user.setUserId("1");
+			return user;
         }
         return user;
     }
