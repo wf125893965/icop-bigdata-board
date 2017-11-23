@@ -46,7 +46,7 @@ public class PersistService {
 			PersistContext context = new PersistContext(dashboardId);
 			TASK_MAP.put(persistId, context);
 			String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-			LocalSecurityFilter.put(uuid, userId);
+//			LocalSecurityFilter.put(uuid, userId);
 			String phantomUrl = new StringBuffer(request.getScheme() + "://").append(request.getServerName() + ":")
 					.append(web).append("render.html").append("?sid=").append(uuid).append("#?id=").append(dashboardId)
 					.append("&pid=").append(persistId).toString();

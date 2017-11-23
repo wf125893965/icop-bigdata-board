@@ -52,7 +52,7 @@ public class LocalSecurityFilter implements Filter {
 		if(context!=null){
 			authentication = context.getAuthentication();
 		}
-        
+		
         if ("/render.html".equals(((HttpServletRequest) servletRequest).getServletPath())) {
 			if (authentication == null || ("shareUser").equals(authentication.getName())) {
 				context = SecurityContextHolder.getContext();
