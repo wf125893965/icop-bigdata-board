@@ -206,6 +206,17 @@ cBoard.controller('datasetCtrl', function ($scope, $http, $state, $stateParams, 
         return true;
     };
 
+    var toEditDatasetPage = function (id) {
+        $http.get("dashboard/getDatasetList.do").success(function (response) {
+            $scope.datasetList = response;
+            $state.go('config.dataset', {id: id}, {notify: false});
+            $scope.editDs(_.find($scope.datasetList, function (ds) {
+                return ds.id == id;
+            }));
+            $scope.searchNode();
+        });
+    };
+
     $scope.save = function () {
         $scope.datasource ? $scope.curDataset.data.datasource = $scope.datasource.id : null;
         $scope.curDataset.data.query = $scope.curWidget.query;
@@ -226,7 +237,8 @@ cBoard.controller('datasetCtrl', function ($scope, $http, $state, $stateParams, 
                 if (serviceStatus.status == '1') {
                     $scope.optFlag = 'none';
                     getCategoryList();
-                    getDatasetList();
+//                    getDatasetList();// 新增完成后重新获取dataset list
+                    toEditDatasetPage(serviceStatus.id); // 新增完成后重新获取dataset list，并进入新增的数据集的编辑页
                     $scope.verify = {dsName: true};
                     ModalUtils.alert(translate("COMMON.SUCCESS"), "modal-success", "sm");
                 } else {

@@ -1001,6 +1001,18 @@ cBoard.controller('widgetCtrl', function ($scope, $state, $stateParams, $http, $
             }
         };
 
+        var toEditWgtPage = function (id) {
+            $http.get("dashboard/getWidgetList.do").success(function (response) {
+                $scope.widgetList = response;
+                var wid =  _.find($scope.widgetList, function (w) {
+                    return w.id == id;
+                });
+                $state.go('config.widget', {id: id}, {notify: false, inherit: false});
+                $scope.editWgt(wid);
+                $scope.searchNode();
+            });
+        };
+
         $scope.saveWgt = function (alertFlag) {
             $scope.liteMode = false;
             if (!validation()) {
@@ -1050,7 +1062,8 @@ cBoard.controller('widgetCtrl', function ($scope, $state, $stateParams, $http, $
                 $http.post("dashboard/saveNewWidget.do", {json: angular.toJson(o)}).success(function (serviceStatus) {
                     if (serviceStatus.status == '1') {
                         $scope.optFlag = 'none';
-                        getWidgetList();
+//                        getWidgetList(); // 新增完后重新获取widget list
+                        toEditWgtPage(serviceStatus.id);// 新增完后重新获取widget list，并进入新增的widget编辑页面
                         getCategoryList();
                         ModalUtils.alert(translate("COMMON.SUCCESS"), "modal-success", "sm");
                     } else {
