@@ -2,20 +2,25 @@ package org.cboard.security.service;
 
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.cboard.dto.User;
 import org.cboard.services.AuthenticationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 /**
  * Created by yfyuan on 2016/12/14.
  */
 public class DefaultAuthenticationService implements AuthenticationService {
 
-    @Override
+	@Autowired
+    private HttpServletRequest request;
+	
+	@Override
     public User getCurrentUser() {
-        SecurityContext context = SecurityContextHolder.getContext();
+    	
+    	SecurityContext context = (SecurityContext) request.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
         if (context == null) {
             return null;
         }
