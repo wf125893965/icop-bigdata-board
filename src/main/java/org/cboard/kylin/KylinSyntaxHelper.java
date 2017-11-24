@@ -30,22 +30,22 @@ public class KylinSyntaxHelper extends SqlSyntaxHelper {
         switch (vConfig.getAggType()) {
 
         case "sum":
-			return "SUM(" + surroundWithQutaAll(vConfig.getColumn()) + ") AS sum_"
+			return "SUM(" + vConfig.getColumn() + ") AS sum_"
 					+ StringUtils.substringAfter(vConfig.getColumn(), ".");
 		case "avg":
-			return "AVG(" + surroundWithQutaAll(vConfig.getColumn()) + ") AS avg_"
+			return "AVG(" + vConfig.getColumn() + ") AS avg_"
 					+ StringUtils.substringAfter(vConfig.getColumn(), ".");
 		case "max":
-			return "MAX(" + surroundWithQutaAll(vConfig.getColumn()) + ") AS max_"
+			return "MAX(" + vConfig.getColumn() + ") AS max_"
 					+ StringUtils.substringAfter(vConfig.getColumn(), ".");
 		case "min":
-			return "MIN(" + surroundWithQutaAll(vConfig.getColumn()) + ") AS min_"
+			return "MIN(" + vConfig.getColumn() + ") AS min_"
 					+ StringUtils.substringAfter(vConfig.getColumn(), ".");
 		case "distinct":
-			return "COUNT(DISTINCT " + surroundWithQutaAll(vConfig.getColumn()) + ") AS count_d_"
+			return "COUNT(DISTINCT " + vConfig.getColumn() + ") AS count_d_"
 					+ StringUtils.substringAfter(vConfig.getColumn(), ".");
 		default:
-			return "COUNT(" + surroundWithQutaAll(vConfig.getColumn()) + ") AS count_"
+			return "COUNT(" + vConfig.getColumn() + ") AS count_"
 					+ StringUtils.substringAfter(vConfig.getColumn(), ".");
 		}
     }

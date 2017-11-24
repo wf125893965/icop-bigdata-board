@@ -1,13 +1,12 @@
 package org.cboard.dataprovider.util;
 
-import org.apache.commons.lang.StringUtils;
-import org.cboard.dataprovider.config.DimensionConfig;
-import org.cboard.dataprovider.config.ValueConfig;
-
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.StringJoiner;
+
+import org.cboard.dataprovider.config.DimensionConfig;
+import org.cboard.dataprovider.config.ValueConfig;
 
 /**
  * Created by zyong on 2017/9/18.
@@ -62,12 +61,6 @@ public class SqlSyntaxHelper {
         return this;
     }
 
-    public String surroundWithQutaAll(String text) {
-		String table = StringUtils.substringBefore(text, ".");
-		String column = StringUtils.substringAfter(text, ".");
-		return table + "." + column;
-	}
-    
     public String formatTableName(String rawName) {
   		String tmp = rawName.replaceAll("\"", "");
   		StringJoiner joiner = new StringJoiner(".");

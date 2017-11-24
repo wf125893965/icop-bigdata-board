@@ -27,7 +27,6 @@ import org.cboard.dataprovider.config.DimensionConfig;
 import org.cboard.dataprovider.result.AggregateResult;
 import org.cboard.dataprovider.util.DPCommonUtils;
 import org.cboard.dataprovider.util.SqlHelper;
-import org.cboard.dataprovider.util.SqlSyntaxHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -75,8 +74,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
 
     private KylinModel kylinModel;
     private SqlHelper sqlHelper;
-    private SqlSyntaxHelper sqlSyntaxHelper;
-
+    
     private String getKey(Map<String, String> dataSource, Map<String, String> query) {
         return Hashing.md5().newHasher().putString(JSONObject.toJSON(dataSource).toString() + JSONObject.toJSON(query).toString(), Charsets.UTF_8).hash().toString();
     }
@@ -158,7 +156,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             whereStr =  sqlHelper.assembleFilterSql(filterHelpers);
         }
         fsql = "SELECT %s FROM %s %s %s GROUP BY %s ORDER BY %s";
-        exec = String.format(fsql, sqlSyntaxHelper.surroundWithQutaAll(columnName), sqlSyntaxHelper.formatTableName(tableName), StringUtils.substringBefore(columnName, "."), whereStr, sqlSyntaxHelper.surroundWithQutaAll(columnName), sqlSyntaxHelper.surroundWithQutaAll(columnName));
+        exec = String.format(fsql, columnName, tableName, StringUtils.substringBefore(columnName, "."), whereStr, columnName, columnName);
         LOG.info(exec);
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
@@ -238,8 +236,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
         try {
             kylinModel = getModel();
             sqlHelper = new SqlHelper(kylinModel.geModelSql(), false);
-            sqlSyntaxHelper = new KylinSyntaxHelper(kylinModel);
-            sqlHelper.setSqlSyntaxHelper(sqlSyntaxHelper);
+            sqlHelper.setSqlSyntaxHelper(new KylinSyntaxHelper(kylinModel));
         } catch (Exception e) {
             LOG.error("", e);
         }

@@ -8,6 +8,7 @@ import org.cboard.dto.User;
 import org.cboard.security.ShareAuthenticationToken;
 import org.cboard.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +34,13 @@ public class DefaultAuthenticationService implements AuthenticationService {
 			request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", context);
 			return user;
 		}else {
-			ShareAuthenticationToken authentication = (ShareAuthenticationToken) context.getAuthentication();
+			Authentication authentication = context.getAuthentication();
+			if(CasAuthenticationToken.class.isInstance(authentication)){
+				authentication = (CasAuthenticationToken)authentication;
+				
+			}else if(ShareAuthenticationToken.class.isInstance(authentication)){
+				authentication = (ShareAuthenticationToken)authentication;
+			}
 			user = (User) authentication.getPrincipal();
 		}
 		return user;

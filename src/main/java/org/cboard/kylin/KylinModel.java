@@ -2,11 +2,9 @@ package org.cboard.kylin;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,20 +22,10 @@ class KylinModel implements Serializable {
 	private Map<String, String> tableAlias = new HashMap<String, String>();
 	private Map<String, String> columnType = new HashMap<String, String>();
 
-	/*
-	 * public String getColumnAndAlias(String column) { return
-	 * tableAlias.get(columnTable.get(column)) + "." + surroundWithQuta(column);
-	 * }
-	 */
-
 	public String getTable(String column) {
 		return columnTable.get(column);
 	}
-
-	/*
-	 * public String getTableAlias(String table) { return tableAlias.get(table);
-	 * }
-	 */
+	
 	private Map<String, String> getColumnsType(String table, String serverIp, String username, String password) {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(username, password));
@@ -80,7 +68,7 @@ class KylinModel implements Serializable {
 	}
 
 	public String geModelSql() {
-		String factTable = formatTableName(model.getString("fact_table"));
+		String factTable = model.getString("fact_table");
 		return String.format("%s %s %s", factTable, StringUtils.substringAfter(model.getString("fact_table"), "."),
 				getJoinSql(tableAlias.get(factTable)));
 	}
@@ -88,17 +76,14 @@ class KylinModel implements Serializable {
 	private String getJoinSql(String factAlias) {
 		String s = model.getJSONArray("lookups").stream().map(e -> {
 			JSONObject j = (JSONObject) e;
-			String[] pk = j.getJSONObject("join").getJSONArray("primary_key").stream().map(p -> p.toString())
-					.toArray(String[]::new);
-			String[] fk = j.getJSONObject("join").getJSONArray("foreign_key").stream().map(p -> p.toString())
-					.toArray(String[]::new);
+			String[] pk = j.getJSONObject("join").getJSONArray("primary_key").stream().map(p -> p.toString()).toArray(String[]::new);
+			String[] fk = j.getJSONObject("join").getJSONArray("foreign_key").stream().map(p -> p.toString()).toArray(String[]::new);
 			List<String> on = new ArrayList<>();
-
 			for (int i = 0; i < pk.length; i++) {
-				on.add(String.format("%s = %s", surroundWithQutaAll(pk[i]), surroundWithQutaAll(fk[i])));
+				on.add(String.format("%s = %s", pk[i], fk[i]));
 			}
 			String type = j.getJSONObject("join").getString("type").toUpperCase();
-			String pTable = formatTableName(j.getString("table"));
+			String pTable = j.getString("table");
 			String onStr = on.stream().collect(Collectors.joining(" and "));
 			return String.format("\n %s JOIN %s %s ON %s", type, pTable, j.getString("alias"), onStr);
 		}).collect(Collectors.joining(" "));
@@ -107,40 +92,10 @@ class KylinModel implements Serializable {
 
 	public String[] getColumns() {
 		List<String> result = new ArrayList<>();
-		/*
-		 * model.getJSONArray("dimensions").forEach( e -> ((JSONObject)
-		 * e).getJSONArray("columns").stream().map(c ->
-		 * c.toString()).forEach(result::add));
-		 */
 		model.getJSONArray("dimensions").stream().map(e -> (JSONObject) e).forEach(s -> s.getJSONArray("columns")
 				.stream().map(e -> (String) e).forEach(r -> result.add(s.getString("table") + "." + r)));
-		/*JSONArray jsonArray = model.getJSONArray("dimensions");
-		for (Object e : jsonArray) {
-			JSONArray ejsonArray = ((JSONObject) e).getJSONArray("columns");
-			String table = ((JSONObject) e).getString("table");
-			for (Object c : ejsonArray) {
-				result.add(table + "." + c.toString());
-			}
-		}*/
 		model.getJSONArray("metrics").stream().map(e -> e.toString()).forEach(result::add);
 		return result.toArray(new String[0]);
 	}
-
-	public String formatTableName(String rawName) {
-		String tmp = rawName.replaceAll("\"", "");
-		StringJoiner joiner = new StringJoiner(".");
-		Arrays.stream(tmp.split("\\.")).forEach(joiner::add);
-		return joiner.toString();
-	}
 	
-	/*private String surroundWithQuta(String text) {
-		return QUOTATAION + text + QUOTATAION;
-	}*/
-
-	private String surroundWithQutaAll(String text) {
-		String table = StringUtils.substringBefore(text, ".");
-		String column = StringUtils.substringAfter(text, ".");
-		return table + "." + column;
-	}
-
 }
