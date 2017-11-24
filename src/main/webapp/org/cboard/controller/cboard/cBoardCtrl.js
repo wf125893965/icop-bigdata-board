@@ -42,6 +42,10 @@ cBoard.controller('cBoardCtrl', function ($rootScope, $scope, $location, $http, 
     });
 
     $scope.isShowMenu = function (code) {
+    	// board.html页面快捷工具中的编辑按钮不显示
+    	if($location.absUrl().indexOf("board.html") > 0){
+    		return false;
+    	};
         return !_.isUndefined(_.find($scope.menuList, function (menu) {
             return menu.menuCode == code
         }));
