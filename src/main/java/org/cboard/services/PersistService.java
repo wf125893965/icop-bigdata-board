@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -11,8 +12,11 @@ import java.util.concurrent.ConcurrentMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.cboard.dao.BoardDao;
+import org.cboard.dao.CategoryDao;
 import org.cboard.exception.CBoardException;
-import org.cboard.security.service.LocalSecurityFilter;
+import org.cboard.pojo.DashboardBoard;
+import org.cboard.pojo.DashboardCategory;
 import org.cboard.services.persist.PersistContext;
 import org.cboard.util.SystemUtil;
 import org.slf4j.Logger;
@@ -35,6 +39,12 @@ public class PersistService {
 	@Autowired
 	private HttpServletRequest request;
 
+	@Autowired
+	private BoardDao boardDao;
+
+	@Autowired
+	private CategoryDao categoryDao;
+
 	public PersistContext persist(Long dashboardId, String userId) {
 		String persistId = UUID.randomUUID().toString().replaceAll("-", "");
 		Process process = null;
@@ -46,7 +56,7 @@ public class PersistService {
 			PersistContext context = new PersistContext(dashboardId);
 			TASK_MAP.put(persistId, context);
 			String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-//			LocalSecurityFilter.put(uuid, userId);
+			// LocalSecurityFilter.put(uuid, userId);
 			String phantomUrl = new StringBuffer(request.getScheme() + "://").append(request.getServerName() + ":")
 					.append(web).append("render.html").append("?sid=").append(uuid).append("#?id=").append(dashboardId)
 					.append("&pid=").append(persistId).toString();
@@ -104,18 +114,22 @@ public class PersistService {
 	}
 
 	public String getPhantomUrl(Long dashboardId, String userId) {
-		String persistId = UUID.randomUUID().toString().replaceAll("-", "");
 		String web = request.getServerPort() + "";
 		if (StringUtils.isNotBlank(request.getContextPath())) {
 			web += request.getContextPath() + "/";
 		}
-		PersistContext context = new PersistContext(dashboardId);
-		TASK_MAP.put(persistId, context);
-		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-		// LocalSecurityFilter.put(uuid, userId);
-		String phantomUrl = new StringBuffer(request.getScheme() + "://").append(request.getServerName() + ":")
-				.append(web).append("render.html").append("?sid=").append(uuid).append("#?id=").append(dashboardId)
-				.append("&pid=").append(persistId).toString();
+		DashboardBoard board = boardDao.getBoard(dashboardId);
+		List<DashboardCategory> categoryList = categoryDao.getCategoryList();
+		String categoryName = null;
+		if (!categoryList.isEmpty()) {
+			for (DashboardCategory dc : categoryList) {
+				if (dc.getId() == board.getCategoryId()) {
+					categoryName = dc.getName();
+				}
+			}
+		}
+		String basePath = request.getScheme() + "://" + request.getServerName() + ":" + web;
+		String phantomUrl = basePath + "board.html#/dashboard/" + categoryName + "/" + dashboardId;
 		return phantomUrl;
 	}
 
