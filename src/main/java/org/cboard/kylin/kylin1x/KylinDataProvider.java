@@ -1,18 +1,8 @@
-package org.cboard.kylin;
+package org.cboard.kylin.kylin1x;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang.StringUtils;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 import org.cboard.cache.CacheManager;
 import org.cboard.cache.HeapCacheManager;
 import org.cboard.dataprovider.DataProvider;
@@ -21,9 +11,7 @@ import org.cboard.dataprovider.aggregator.Aggregatable;
 import org.cboard.dataprovider.annotation.DatasourceParameter;
 import org.cboard.dataprovider.annotation.ProviderName;
 import org.cboard.dataprovider.annotation.QueryParameter;
-import org.cboard.dataprovider.config.AggConfig;
-import org.cboard.dataprovider.config.ConfigComponent;
-import org.cboard.dataprovider.config.DimensionConfig;
+import org.cboard.dataprovider.config.*;
 import org.cboard.dataprovider.result.AggregateResult;
 import org.cboard.dataprovider.util.DPCommonUtils;
 import org.cboard.dataprovider.util.SqlHelper;
@@ -33,9 +21,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.web.client.RestTemplate;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
+import java.sql.*;
+import java.util.*;
+import java.util.stream.Stream;
+
 
 /**
  * Created by yfyuan on 2017/3/6.
@@ -44,7 +33,7 @@ import com.google.common.hash.Hashing;
 public class KylinDataProvider extends DataProvider implements Aggregatable, Initializing {
 
     private static final Logger LOG = LoggerFactory.getLogger(KylinDataProvider.class);
-    
+
     @DatasourceParameter(label = "Kylin Server *",
             type = DatasourceParameter.Type.Input,
             required = true,
@@ -74,7 +63,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
 
     private KylinModel kylinModel;
     private SqlHelper sqlHelper;
-    
+
     private String getKey(Map<String, String> dataSource, Map<String, String> query) {
         return Hashing.md5().newHasher().putString(JSONObject.toJSON(dataSource).toString() + JSONObject.toJSON(query).toString(), Charsets.UTF_8).hash().toString();
     }
@@ -136,7 +125,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
         String exec = null;
         List<String> filtered = new ArrayList<>();
         String tableName = kylinModel.getTable(columnName);
-//        String columnAliasName = kylinModel.getColumnAndAlias(columnName);
+        String columnAliasName = kylinModel.getColumnAndAlias(columnName);
         String whereStr = "";
         if (config != null) {
             Stream<DimensionConfig> c = config.getColumns().stream();
@@ -156,7 +145,7 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             whereStr =  sqlHelper.assembleFilterSql(filterHelpers);
         }
         fsql = "SELECT %s FROM %s %s %s GROUP BY %s ORDER BY %s";
-        exec = String.format(fsql, columnName, tableName, StringUtils.substringBefore(columnName, "."), whereStr, columnName, columnName);
+        exec = String.format(fsql, columnAliasName, tableName, kylinModel.getTableAlias(tableName), whereStr, columnAliasName, columnAliasName);
         LOG.info(exec);
         try (Connection connection = getConnection();
              Statement stat = connection.createStatement();
@@ -241,5 +230,5 @@ public class KylinDataProvider extends DataProvider implements Aggregatable, Ini
             LOG.error("", e);
         }
     }
-    
+
 }

@@ -1,4 +1,4 @@
-package org.cboard.kylin;
+package org.cboard.kylin.kylin2x;
 
 import java.io.Serializable;
 import java.util.ArrayList;

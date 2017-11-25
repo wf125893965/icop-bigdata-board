@@ -1,4 +1,4 @@
-package org.cboard.kylin;
+package org.cboard.kylin.kylin2x;
 
 import org.apache.commons.lang.StringUtils;
 import org.cboard.dataprovider.config.DimensionConfig;
