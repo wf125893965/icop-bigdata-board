@@ -156,12 +156,6 @@ var crossTable = {
     	var result = data, len = data.length, s = 40;
         if(data && len > s){
         	result = "";
-        	/*for(var i = 0; i < len; i = i+s){
-        		if(i != 0){
-        			celData += "<br />";
-        		}
-        		celData += temData.substr(i, s);
-        	}*/
         	var curlen = 0, patten = /.*[\u4e00-\u9fa5]+.*$/;
             for(var i = 0; i < len; i++){
                 patten.test(data[i]) ? curlen += 2 : curlen++;
@@ -253,7 +247,7 @@ var crossTable = {
             }
             for (var y = chartConfig.keys.length; y < data[n].length; y++) {
                 var align = chartConfig.values[0].cols[(y-chartConfig.keys.length)%chartConfig.values[0].cols.length].align;
-                var temData = data[n][y].data/* === "" ? "" : data[n][y].data + " ABCD EFG HIJKLMNO PQ RST"*/;
+                var temData = data[n][y].data;
                 var celData = this.dataWrap(temData);
                 rowContent += "<td style='text-align:"+align+"'class=" + data[n][m].property + "><div>" + celData + "</div></td>";
             }
