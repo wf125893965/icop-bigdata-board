@@ -179,23 +179,28 @@ var crossTable = {
         if (data === undefined) {
             return html;
         }
-        for (var r = 0; r < chartConfig.keys.length; r++) {
-            for (var n = 1; n < data.length; n++) {
-                var node = data[n][r].data;
-                if (r > 0) {
-                    var parent = data[n][r - 1].data;
-                    var next;
-                    n > 0 ? next = data[n - 1][r - 1].data : null;
-                    (node == data[n - 1][r].data && parent == next) ? data[n][r] = {
-                        data: data[n][r].data,
-                        rowSpan: 'row_null',
-                        property: data[n][r].property
-                    } : data[n][r] = {
-                        data: data[n][r].data,
-                        rowSpan: 'row',
-                        property: data[n][r].property
-                    };
-                }
+        
+        for(var n = 1; n < data.length; n++){
+        	for (var r = 0; r < chartConfig.keys.length; r++) {
+        		var node = data[n][r].data;
+        		if (r > 0) {
+        			var flag= true;
+        			for(var x = r; x >= 0; x--){
+        				if(data[n][x].data != data[n-1][x].data && chartConfig.keys[x].sort){
+        					flag = false;
+        					break;
+        				}
+        			}
+        			flag ? data[n][r] = {
+                            data: data[n][r].data,
+                            rowSpan: 'row_null',
+                            property: data[n][r].property
+                        } : data[n][r] = {
+                            data: data[n][r].data,
+                            rowSpan: 'row',
+                            property: data[n][r].property
+                        };
+        		}
                 else if (r == 0) {
                     var preNode = n > 0 ? data[n - 1][r].data : null;
                     (node == preNode) ? data[n][r] = {
@@ -208,8 +213,9 @@ var crossTable = {
                         property: data[n][r].property
                     };
                 }
-            }
+        	}
         }
+        
         for (var n = 0; n < data.length; n++) {
             var rowContent = "<tr>";
             var isFirstLine = (n == 0) ? true : false;
